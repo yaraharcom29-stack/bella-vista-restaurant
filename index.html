@@ -26,6 +26,10 @@
 
     <link rel="stylesheet" href="style.css">
 
+    <!-- EmailJS -->
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 </head>
 
 <body>
@@ -790,17 +794,17 @@
 
     </div>
 
-    <form>
+    <form id="reservationForm">
 
-        <input type="text" placeholder="Full Name">
+        <input type="text" name="name" placeholder="Full Name" required>
 
-        <input type="email" placeholder="Email">
+        <input type="email" name="email" placeholder="Email" required>
 
-        <input type="tel" placeholder="Phone">
+        <input type="tel" name="phone" placeholder="Phone" required>
 
-        <input type="date">
+        <input type="date" name="date" required>
 
-        <input type="time">
+        <input type="time" name="time" required>
 
         <button type="submit">
 
@@ -870,9 +874,9 @@
 
     </p>
 
-    <form>
+    <form id="newsletterForm">
 
-        <input type="email" placeholder="Enter your email">
+        <input type="email" name="email" placeholder="Enter your email" required>
 
         <button>
 

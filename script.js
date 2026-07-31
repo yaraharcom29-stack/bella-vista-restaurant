@@ -3,6 +3,13 @@
    JavaScript
 ========================================== */
 
+// ================= EmailJS Init =================
+// عدّلي الـ PUBLIC KEY هنا بس (تلاقيه في حسابك على emailjs.com > Account)
+
+(function () {
+    emailjs.init("YOUR_PUBLIC_KEY");
+})();
+
 // ================= Loader =================
 
 window.addEventListener("load", () => {
@@ -114,26 +121,74 @@ menuBtn.addEventListener("click", () => {
 });
 
 // ================= Reservation =================
+// عدّلي SERVICE_ID و TEMPLATE_ID بتوعك من emailjs.com
 
-const form = document.querySelector(".reservation form");
+const form = document.getElementById("reservationForm");
 
 form.addEventListener("submit", (e) => {
 
     e.preventDefault();
 
-    alert("✅ Your reservation has been sent successfully!");
+    const submitBtn = form.querySelector("button[type='submit']");
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = "Sending...";
+
+    const templateParams = {
+        name: form.querySelector('input[name="name"]').value,
+        email: form.querySelector('input[name="email"]').value,
+        phone: form.querySelector('input[name="phone"]').value,
+        date: form.querySelector('input[name="date"]').value,
+        time: form.querySelector('input[name="time"]').value,
+    };
+
+    emailjs.send("YOUR_SERVICE_ID", "YOUR_RESERVATION_TEMPLATE_ID", templateParams)
+        .then(() => {
+            alert("✅ Your reservation has been sent successfully!");
+            form.reset();
+        })
+        .catch((err) => {
+            alert("❌ Something went wrong, please try again.");
+            console.error(err);
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
 
 });
 
 // ================= Newsletter =================
+// عدّلي SERVICE_ID و TEMPLATE_ID بتوعك من emailjs.com
 
-const newsForm = document.querySelector(".newsletter form");
+const newsForm = document.getElementById("newsletterForm");
 
 newsForm.addEventListener("submit", (e) => {
 
     e.preventDefault();
 
-    alert("🎉 Thank you for subscribing!");
+    const submitBtn = newsForm.querySelector("button");
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = "Sending...";
+
+    const templateParams = {
+        email: newsForm.querySelector('input[name="email"]').value,
+    };
+
+    emailjs.send("YOUR_SERVICE_ID", "YOUR_NEWSLETTER_TEMPLATE_ID", templateParams)
+        .then(() => {
+            alert("🎉 Thank you for subscribing!");
+            newsForm.reset();
+        })
+        .catch((err) => {
+            alert("❌ Something went wrong, please try again.");
+            console.error(err);
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        });
 
 });
 
