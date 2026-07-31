@@ -7,7 +7,9 @@
 // عدّلي الـ PUBLIC KEY هنا بس (تلاقيه في حسابك على emailjs.com > Account)
 
 (function () {
-    emailjs.init("xIFhq-FyYG3moLNPj");
+    emailjs.init({
+        publicKey: "xIFhq-FyYG3moLNPj",
+    });
 })();
 
 // ================= Loader =================
