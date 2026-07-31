@@ -7,7 +7,7 @@
 // عدّلي الـ PUBLIC KEY هنا بس (تلاقيه في حسابك على emailjs.com > Account)
 
 (function () {
-    emailjs.init("YOUR_PUBLIC_KEY");
+    emailjs.init("xIFhq-FyYG3moLNPj");
 })();
 
 // ================= Loader =================
@@ -142,7 +142,7 @@ form.addEventListener("submit", (e) => {
         time: form.querySelector('input[name="time"]').value,
     };
 
-    emailjs.send("YOUR_SERVICE_ID", "YOUR_RESERVATION_TEMPLATE_ID", templateParams)
+    emailjs.send("service_eyj7j0m", "ze548s5", templateParams)
         .then(() => {
             alert("✅ Your reservation has been sent successfully!");
             form.reset();
@@ -176,7 +176,7 @@ newsForm.addEventListener("submit", (e) => {
         email: newsForm.querySelector('input[name="email"]').value,
     };
 
-    emailjs.send("YOUR_SERVICE_ID", "YOUR_NEWSLETTER_TEMPLATE_ID", templateParams)
+    emailjs.send("service_eyj7j0m", "49h7tee", templateParams)
         .then(() => {
             alert("🎉 Thank you for subscribing!");
             newsForm.reset();
