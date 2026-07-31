@@ -175,8 +175,9 @@ nav a:hover{
 
 .hero{
 
-    height:100vh;
-    background:url("https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600");
+    min-height:100vh;
+    padding-top:120px;
+    background:url("./images/hero.jpg");
     background-size:cover;
     background-position:center;
     display:flex;
