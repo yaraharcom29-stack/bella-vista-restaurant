@@ -125,6 +125,8 @@ menuBtn.addEventListener("click", () => {
 // ================= Reservation =================
 // عدّلي SERVICE_ID و TEMPLATE_ID بتوعك من emailjs.com
 
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz89JWATdTmOLrK4_7aqSwNzbuFpe8vXn2IRqePVC29xad1gyM0o9pw2kO1pFLshVqs/exec";
+
 const form = document.getElementById("reservationForm");
 
 form.addEventListener("submit", (e) => {
@@ -143,6 +145,14 @@ form.addEventListener("submit", (e) => {
         date: form.querySelector('input[name="date"]').value,
         time: form.querySelector('input[name="time"]').value,
     };
+
+    // نسجل الحجز في Google Sheet (بالتوازي مع الإيميل، من غير ما نستنى رده)
+    fetch(GOOGLE_SHEET_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify(templateParams),
+    }).catch((err) => console.error("Sheet log failed:", err));
 
     emailjs.send("service_eyj7j0m", "template_k4h7wfq", templateParams)
         .then(() => {
