@@ -144,7 +144,7 @@ form.addEventListener("submit", (e) => {
         time: form.querySelector('input[name="time"]').value,
     };
 
-    emailjs.send("service_eyj7j0m", "ze548s5", templateParams)
+    emailjs.send("service_eyj7j0m", "template_k4h7wfq", templateParams)
         .then(() => {
             alert("✅ Your reservation has been sent successfully!");
             form.reset();
@@ -178,7 +178,7 @@ newsForm.addEventListener("submit", (e) => {
         email: newsForm.querySelector('input[name="email"]').value,
     };
 
-    emailjs.send("service_eyj7j0m", "49h7tee", templateParams)
+    emailjs.send("service_eyj7j0m", "template_sfcv14c", templateParams)
         .then(() => {
             alert("🎉 Thank you for subscribing!");
             newsForm.reset();
