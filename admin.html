@@ -329,7 +329,14 @@ outline: none;
 <div class="form-group"><label>Dish Name</label><input type="text" id="menuName" placeholder="e.g. Margherita Pizza"></div>
 <div class="form-group"><label>Description</label><textarea id="menuDescription" rows="2" placeholder="Short description..."></textarea></div>
 <div class="form-group"><label>Price ($)</label><input type="number" id="menuPrice" placeholder="18"></div>
-<div class="form-group"><label>Image filename (must already exist in the /images folder)</label><input type="text" id="menuImage" placeholder="pizza.jpg"></div>
+<div class="form-group">
+<label>صورة الطبق</label>
+<input type="file" id="menuImageFile" accept="image/*">
+<div id="menuImagePreviewWrap" style="margin-top:10px; display:none;">
+<img id="menuImagePreview" style="max-width:120px; border-radius:8px;" alt="preview">
+</div>
+<input type="hidden" id="menuImage">
+</div>
 <div class="form-group">
 <label>Badge (optional)</label>
 <select id="menuBadge">
@@ -364,6 +371,13 @@ return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
 '"': "&quot;",
 "'": "&#39;",
 }[ch]));
+}
+
+// الصورة ممكن تكون رابط كامل (لو اترفعت من جوجل درايف) أو اسم ملف محلي قديم في مجلد images
+function resolveImageSrc(image) {
+if (!image) return "";
+if (/^https?:\/\//i.test(image)) return image;
+return "images/" + encodeURIComponent(image);
 }
 
 function checkPassword() {
@@ -522,7 +536,7 @@ return `
 <tr>
 <td>
 <div style="display:flex;align-items:center;gap:12px;">
-<img class="item-img" src="images/${encodeURIComponent(item.image || "")}" onerror="this.style.opacity=0.2" alt="">
+<img class="item-img" src="${resolveImageSrc(item.image)}" onerror="this.style.opacity=0.2" alt="">
 <span class="name-cell">${escapeHtml(item.name)}</span>
 </div>
 </td>
@@ -557,6 +571,7 @@ if (item) deleteMenuItem(item.name);
 
 function openMenuModal(item) {
 document.getElementById("menuModal").classList.add("active");
+document.getElementById("menuImageFile").value = "";
 if (item) {
 editingItemName = item.name;
 document.getElementById("menuModalTitle").textContent = "Edit Dish";
@@ -565,6 +580,12 @@ document.getElementById("menuDescription").value = item.description || "";
 document.getElementById("menuPrice").value = item.price || "";
 document.getElementById("menuImage").value = item.image || "";
 document.getElementById("menuBadge").value = item.badge || "";
+if (item.image) {
+document.getElementById("menuImagePreview").src = resolveImageSrc(item.image);
+document.getElementById("menuImagePreviewWrap").style.display = "block";
+} else {
+document.getElementById("menuImagePreviewWrap").style.display = "none";
+}
 } else {
 editingItemName = null;
 document.getElementById("menuModalTitle").textContent = "Add Dish";
@@ -573,22 +594,68 @@ document.getElementById("menuDescription").value = "";
 document.getElementById("menuPrice").value = "";
 document.getElementById("menuImage").value = "";
 document.getElementById("menuBadge").value = "";
+document.getElementById("menuImagePreviewWrap").style.display = "none";
 }
+}
+
+document.getElementById("menuImageFile").addEventListener("change", function () {
+const file = this.files[0];
+if (!file) return;
+const reader = new FileReader();
+reader.onload = function (e) {
+document.getElementById("menuImagePreview").src = e.target.result;
+document.getElementById("menuImagePreviewWrap").style.display = "block";
+};
+reader.readAsDataURL(file);
+});
+
+function fileToBase64(file) {
+return new Promise((resolve, reject) => {
+const reader = new FileReader();
+reader.onload = () => resolve(reader.result.split(",")[1]); // بنشيل جزء "data:image/...;base64," ونسيب النص بس
+reader.onerror = reject;
+reader.readAsDataURL(file);
+});
+}
+
+// بترفع الصورة المختارة لجوجل درايف وترجع رابطها، أو null لو مفيش صورة جديدة متختارة
+async function uploadSelectedImage() {
+const fileInput = document.getElementById("menuImageFile");
+const file = fileInput.files[0];
+if (!file) return null;
+
+const base64 = await fileToBase64(file);
+const res = await fetch(SHEET_URL, {
+method: "POST",
+headers: { "Content-Type": "text/plain" },
+body: JSON.stringify({
+type: "menu_upload_image",
+key: SECRET_KEY,
+imageData: base64,
+mimeType: file.type || "image/jpeg",
+filename: file.name || "image.jpg",
+}),
+});
+const data = await res.json();
+if (data.result !== "success") {
+throw new Error(data.message || "فشل رفع الصورة");
+}
+return data.url;
 }
 
 function closeMenuModal() {
 document.getElementById("menuModal").classList.remove("active");
 }
 
-function saveMenuItem() {
+async function saveMenuItem() {
 const name = document.getElementById("menuName").value.trim();
 const description = document.getElementById("menuDescription").value.trim();
 const price = document.getElementById("menuPrice").value.trim();
-const image = document.getElementById("menuImage").value.trim();
 const badge = document.getElementById("menuBadge").value;
+let image = document.getElementById("menuImage").value.trim(); // الرابط القديم لو بنعدّل ومختارناش صورة جديدة
 
-if (!name || !price || !image) {
-alert("Please fill in at least the name, price, and image filename.");
+if (!name || !price) {
+alert("Please fill in at least the name and price.");
 return;
 }
 
@@ -596,28 +663,35 @@ const saveBtn = document.getElementById("menuSaveBtn");
 saveBtn.disabled = true;
 saveBtn.textContent = "Saving...";
 
+try {
+const newImageUrl = await uploadSelectedImage();
+if (newImageUrl) image = newImageUrl;
+
+if (!image) {
+alert("من فضلك اختاري صورة للطبق.");
+return;
+}
+
 const payload = editingItemName
 ? { type: "menu_update", key: SECRET_KEY, originalName: editingItemName, name, description, price, image, badge }
 : { type: "menu_add", key: SECRET_KEY, name, description, price, image, badge };
 
-fetch(SHEET_URL, {
+await fetch(SHEET_URL, {
 method: "POST",
 mode: "no-cors",
 headers: { "Content-Type": "text/plain" },
 body: JSON.stringify(payload),
-})
-.then(() => {
+});
+
 closeMenuModal();
 setTimeout(loadMenuItems, 800);
-})
-.catch((err) => {
+} catch (err) {
 console.error("Failed to save item:", err);
-alert("Something went wrong saving this item.");
-})
-.finally(() => {
+alert("حصلت مشكلة وإحنا بنحفظ الطبق ده. جربي تاني.");
+} finally {
 saveBtn.disabled = false;
 saveBtn.textContent = "Save";
-});
+}
 }
 
 function deleteMenuItem(name) {
