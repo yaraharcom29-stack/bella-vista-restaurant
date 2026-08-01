@@ -19,7 +19,7 @@ const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycby68sowQzuMzwN
 const menuContainer = document.querySelector(".menu-container");
 
 if (menuContainer) {
-    fetch(GOOGLE_SHEET_URL)
+    fetch(GOOGLE_SHEET_URL + "?t=" + Date.now(), { cache: "no-store" })
         .then((res) => res.json())
         .then((items) => {
             menuContainer.innerHTML = "";
