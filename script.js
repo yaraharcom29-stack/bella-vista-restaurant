@@ -14,6 +14,20 @@
 
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycby68sowQzuMzwNjKhFVvJHwa4OW6s0pUP9hNzxZSwr-fFGPVObYHZEANL2WCiovEMXe/exec";
 
+// ================= الحماية من XSS =================
+// بتحول أي نص جاي من الشيت (اسم الصنف، الوصف...) لنص آمن قبل ما يتحط
+// جوه الصفحة. من غيرها، أي حد قدر يضيف صنف بالمفتاح السري (لو اتسرب)
+// كان يقدر يحط كود HTML/JS خبيث يتنفذ عند كل زائر عادي للموقع.
+function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+    }[ch]));
+}
+
 // ================= Dynamic Menu (from Google Sheet) =================
 
 const menuContainer = document.querySelector(".menu-container");
@@ -34,19 +48,28 @@ if (menuContainer) {
                 const price = item.Price || item.price || "";
                 const image = item.Image || item.image || "";
 
-                const badgeHTML = badge
-                    ? `<span class="badge${badge.toLowerCase() === "new" ? " new" : ""}">${badge}</span>`
+                // === التعديل: كل القيم دي بتتحط جوه HTML بعد escapeHtml بدل ما تتحط زي ما هي ===
+                const safeName = escapeHtml(name);
+                const safeDescription = escapeHtml(description);
+                const safePrice = escapeHtml(price);
+                const safeBadge = escapeHtml(badge);
+                // الصورة بتتحط كـ attribute (src) مش كـ HTML، فبنستخدم encodeURIComponent
+                // بدل escapeHtml عشان الرابط/الاسم يفضل صالح كمسار ملف
+                const safeImage = encodeURIComponent(image);
+
+                const badgeHTML = safeBadge
+                    ? `<span class="badge${safeBadge.toLowerCase() === "new" ? " new" : ""}">${safeBadge}</span>`
                     : "";
 
                 card.innerHTML = `
                     ${badgeHTML}
-                    <img src="images/${image}" alt="${name}" loading="lazy">
+                    <img src="images/${safeImage}" alt="${safeName}" loading="lazy">
                     <div class="food-info">
-                        <h3>${name}</h3>
+                        <h3>${safeName}</h3>
                         <div class="rating">⭐⭐⭐⭐⭐</div>
-                        <p>${description}</p>
+                        <p>${safeDescription}</p>
                         <div class="price-row">
-                            <span class="price">$${price}</span>
+                            <span class="price">$${safePrice}</span>
                             <button>Add To Cart</button>
                         </div>
                     </div>

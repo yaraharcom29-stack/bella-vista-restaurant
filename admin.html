@@ -354,6 +354,9 @@ outline: none;
 
 <script>
 // غيّري كلمة السر دي لأي حاجة تانية تحبيها
+// ملحوظة أمان: الباسورد والـ SECRET_KEY هنا لسه ظاهرين في الكود العام (View Source).
+// ده مش حل نهائي - الحل الحقيقي محتاج تسجيل دخول فعلي (Google Sign-In) يتحقق منه السيرفر.
+// اتفقنا نأجل الخطوة دي، والتعديل ده بيركز على إصلاح مشكلة الحذف/الأخطاء الصامتة بس.
 const ADMIN_PASSWORD = "bellavista2026";
 const SHEET_URL = "https://script.google.com/macros/s/AKfycby68sowQzuMzwNjKhFVvJHwa4OW6s0pUP9hNzxZSwr-fFGPVObYHZEANL2WCiovEMXe/exec";
 // لازم يكون نفس القيمة بالظبط اللي حطيتيها في SECRET_KEY جوه Code.gs
@@ -446,6 +449,10 @@ tbody.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center;pa
 fetch(SHEET_URL + "?action=reservations&key=" + encodeURIComponent(SECRET_KEY) + "&t=" + Date.now(), { cache: "no-store" })
 .then((res) => res.json())
 .then((data) => {
+if (data && data.error) {
+tbody.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center;padding:30px;">${escapeHtml(data.error)}</td></tr>`;
+return;
+}
 allReservations = data.reverse();
 updateStats();
 renderTable();
@@ -672,42 +679,58 @@ alert("Please select an image for the dish.");
 return;
 }
 
+// ملاحظة: originalName بيتبعت زي ما هو، وCode.gs دلوقتي بيعمل trim ليه من ناحيته برضه
 const payload = editingItemName
 ? { type: "menu_update", key: SECRET_KEY, originalName: editingItemName, name, description, price, image, badge }
 : { type: "menu_add", key: SECRET_KEY, name, description, price, image, badge };
 
-await fetch(SHEET_URL, {
+// === التعديل: شيلنا mode:"no-cors" وبقينا نقرأ الرد فعليًا ===
+const saveRes = await fetch(SHEET_URL, {
 method: "POST",
-mode: "no-cors",
 headers: { "Content-Type": "text/plain" },
 body: JSON.stringify(payload),
 });
+const saveData = await saveRes.json();
+if (saveData.result !== "success") {
+alert("❌ Save failed: " + (saveData.message || "Unknown error from server."));
+console.error("Save failed:", saveData);
+return;
+}
 
 closeMenuModal();
 setTimeout(loadMenuItems, 800);
 } catch (err) {
 console.error("Failed to save item:", err);
-alert("Something went wrong saving this item. Please try again.");
+alert("❌ Something went wrong saving this item: " + err.message);
 } finally {
 saveBtn.disabled = false;
 saveBtn.textContent = "Save";
 }
 }
 
+// === التعديل: شيلنا mode:"no-cors"، قرأنا الرد، وبنعمل trim على الاسم قبل ما نبعته ===
 function deleteMenuItem(name) {
 if (!confirm(`Delete "${name}" from the menu? This can't be undone.`)) return;
+
+const cleanName = String(name ?? "").trim();
+
 fetch(SHEET_URL, {
 method: "POST",
-mode: "no-cors",
 headers: { "Content-Type": "text/plain" },
-body: JSON.stringify({ type: "menu_delete", key: SECRET_KEY, name }),
+body: JSON.stringify({ type: "menu_delete", key: SECRET_KEY, name: cleanName }),
 })
-.then(() => {
+.then((res) => res.json())
+.then((data) => {
+if (data.result !== "success") {
+alert("❌ Delete failed: " + (data.message || "Unknown error from server."));
+console.error("Delete failed:", data);
+return;
+}
 setTimeout(loadMenuItems, 800);
 })
 .catch((err) => {
 console.error("Failed to delete item:", err);
-alert("Something went wrong deleting this item.");
+alert("❌ Delete request failed (network or CORS issue). Check console for details.");
 });
 }
 
@@ -718,4 +741,4 @@ loadReservations();
 }
 </script>
 </body>
-</html
+</html>
