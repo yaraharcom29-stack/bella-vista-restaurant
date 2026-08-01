@@ -397,6 +397,15 @@ return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "nu
 
 function fmtTime(iso) {
 if (!iso) return "-";
+// لو الوقت متسجل كنص بسيط زي "17:22" (مش تاريخ كامل)، نحوّله يدويًا لنفس شكل الـ 12 ساعة
+const simpleMatch = String(iso).match(/^(\d{1,2}):(\d{2})$/);
+if (simpleMatch) {
+let hours = parseInt(simpleMatch[1], 10);
+const minutes = simpleMatch[2];
+const ampm = hours >= 12 ? "PM" : "AM";
+hours = hours % 12 || 12;
+return `${hours}:${minutes} ${ampm}`;
+}
 const d = new Date(iso);
 if (isNaN(d)) return iso;
 return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
