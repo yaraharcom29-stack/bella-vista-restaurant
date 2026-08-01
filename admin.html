@@ -349,6 +349,8 @@ outline: none;
 // غيّري كلمة السر دي لأي حاجة تانية تحبيها
 const ADMIN_PASSWORD = "bellavista2026";
 const SHEET_URL = "https://script.google.com/macros/s/AKfycby68sowQzuMzwNjKhFVvJHwa4OW6s0pUP9hNzxZSwr-fFGPVObYHZEANL2WCiovEMXe/exec";
+// لازم يكون نفس القيمة بالظبط اللي حطيتيها في SECRET_KEY جوه Code.gs
+const SECRET_KEY = "Qk7mR2vXpL9wT4nY6zJ8s";
 
 let allReservations = [];
 
@@ -418,7 +420,7 @@ return d >= t;
 function loadReservations() {
 const tbody = document.getElementById("resTableBody");
 tbody.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center;padding:30px;">Loading...</td></tr>`;
-fetch(SHEET_URL + "?action=reservations&t=" + Date.now(), { cache: "no-store" })
+fetch(SHEET_URL + "?action=reservations&key=" + encodeURIComponent(SECRET_KEY) + "&t=" + Date.now(), { cache: "no-store" })
 .then((res) => res.json())
 .then((data) => {
 allReservations = data.reverse();
@@ -586,8 +588,8 @@ saveBtn.disabled = true;
 saveBtn.textContent = "Saving...";
 
 const payload = editingItemName
-? { type: "menu_update", originalName: editingItemName, name, description, price, image, badge }
-: { type: "menu_add", name, description, price, image, badge };
+? { type: "menu_update", key: SECRET_KEY, originalName: editingItemName, name, description, price, image, badge }
+: { type: "menu_add", key: SECRET_KEY, name, description, price, image, badge };
 
 fetch(SHEET_URL, {
 method: "POST",
@@ -615,7 +617,7 @@ fetch(SHEET_URL, {
 method: "POST",
 mode: "no-cors",
 headers: { "Content-Type": "text/plain" },
-body: JSON.stringify({ type: "menu_delete", name }),
+body: JSON.stringify({ type: "menu_delete", key: SECRET_KEY, name }),
 })
 .then(() => {
 setTimeout(loadMenuItems, 800);
