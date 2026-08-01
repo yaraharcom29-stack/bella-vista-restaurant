@@ -12,6 +12,49 @@
     });
 })();
 
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycby68sowQzuMzwNjKhFVvJHwa4OW6s0pUP9hNzxZSwr-fFGPVObYHZEANL2WCiovEMXe/exec";
+
+// ================= Dynamic Menu (from Google Sheet) =================
+
+const menuContainer = document.querySelector(".menu-container");
+
+if (menuContainer) {
+    fetch(GOOGLE_SHEET_URL)
+        .then((res) => res.json())
+        .then((items) => {
+            menuContainer.innerHTML = "";
+
+            items.forEach((item) => {
+                const card = document.createElement("div");
+                card.className = "food-card";
+
+                const badgeHTML = item.badge
+                    ? `<span class="badge${item.badge.toLowerCase() === "new" ? " new" : ""}">${item.badge}</span>`
+                    : "";
+
+                card.innerHTML = `
+                    ${badgeHTML}
+                    <img src="images/${item.image}" alt="${item.name}" loading="lazy">
+                    <div class="food-info">
+                        <h3>${item.name}</h3>
+                        <div class="rating">⭐⭐⭐⭐⭐</div>
+                        <p>${item.description}</p>
+                        <div class="price-row">
+                            <span class="price">$${item.price}</span>
+                            <button>Add To Cart</button>
+                        </div>
+                    </div>
+                `;
+
+                menuContainer.appendChild(card);
+            });
+        })
+        .catch((err) => {
+            console.error("Failed to load menu:", err);
+            // لو فشل التحميل، المنيو الثابت هيفضل زي ما هو (احتياطي)
+        });
+}
+
 // ================= Loader =================
 
 window.addEventListener("load", () => {
@@ -124,8 +167,6 @@ menuBtn.addEventListener("click", () => {
 
 // ================= Reservation =================
 // عدّلي SERVICE_ID و TEMPLATE_ID بتوعك من emailjs.com
-
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz89JWATdTmOLrK4_7aqSwNzbuFpe8vXn2IRqePVC29xad1gyM0o9pw2kO1pFLshVqs/exec";
 
 const form = document.getElementById("reservationForm");
 
