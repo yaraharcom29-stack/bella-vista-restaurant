@@ -183,7 +183,7 @@ form.addEventListener("submit", (e) => {
     const submitBtn = form.querySelector("button[type='submit']");
     const originalText = submitBtn.innerHTML;
     submitBtn.disabled = true;
-    submitBtn.innerHTML = "Sending...";
+    submitBtn.innerHTML = "Checking availability...";
 
     const templateParams = {
         name: form.querySelector('input[name="name"]').value,
@@ -193,26 +193,66 @@ form.addEventListener("submit", (e) => {
         time: form.querySelector('input[name="time"]').value,
     };
 
-    // نسجل الحجز في Google Sheet (بالتوازي مع الإيميل، من غير ما نستنى رده)
-    fetch(GOOGLE_SHEET_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify(templateParams),
-    }).catch((err) => console.error("Sheet log failed:", err));
+    // الخطوة 1: نتأكد إن الميعاد ده متاح قبل ما نبعت أي حاجة
+    fetch(GOOGLE_SHEET_URL + "?action=checkAvailability&date=" + encodeURIComponent(templateParams.date) + "&time=" + encodeURIComponent(templateParams.time) + "&t=" + Date.now(), { cache: "no-store" })
+        .then((res) => res.json())
+        .then((result) => {
+            if (result.available === false) {
+                alert("⚠️ Sorry, this time slot is already booked. Please choose a different date or time.");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                return;
+            }
 
-    emailjs.send("service_eyj7j0m", "template_k4h7wfq", templateParams)
-        .then(() => {
-            alert("✅ Your reservation has been sent successfully!");
-            form.reset();
+            submitBtn.innerHTML = "Sending...";
+
+            // الخطوة 2: الميعاد متاح، نسجل الحجز في Google Sheet (بالتوازي مع الإيميل)
+            fetch(GOOGLE_SHEET_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(templateParams),
+            }).catch((err) => console.error("Sheet log failed:", err));
+
+            emailjs.send("service_eyj7j0m", "template_k4h7wfq", templateParams)
+                .then(() => {
+                    alert("✅ Your reservation has been sent successfully!");
+                    form.reset();
+                })
+                .catch((err) => {
+                    alert("❌ Something went wrong, please try again.");
+                    console.error(err);
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                });
         })
         .catch((err) => {
-            alert("❌ Something went wrong, please try again.");
-            console.error(err);
-        })
-        .finally(() => {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
+            console.error("Availability check failed:", err);
+            // لو فحص التوفر نفسه فشل (مشكلة نت مثلاً)، نكمل الحجز عادي بدل ما نوقف المستخدم
+            submitBtn.innerHTML = "Sending...";
+
+            fetch(GOOGLE_SHEET_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(templateParams),
+            }).catch((err2) => console.error("Sheet log failed:", err2));
+
+            emailjs.send("service_eyj7j0m", "template_k4h7wfq", templateParams)
+                .then(() => {
+                    alert("✅ Your reservation has been sent successfully!");
+                    form.reset();
+                })
+                .catch((err2) => {
+                    alert("❌ Something went wrong, please try again.");
+                    console.error(err2);
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                });
         });
 
 });
