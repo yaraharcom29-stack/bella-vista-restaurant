@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root {
 --gold: #d4af37;
@@ -71,6 +72,7 @@ cursor: pointer;
 transition: background .2s;
 }
 .login-card button:hover { background: var(--gold-light); }
+#googleSignInButton { display: flex; justify-content: center; min-height: 44px; }
 #loginError { color: #e57373; font-size: 13px; margin-top: 12px; display: none; }
 #dashboard { display: none; }
 .topbar {
@@ -251,12 +253,11 @@ outline: none;
 <body>
 <div id="loginScreen">
 <div class="login-card">
-<i class="fa-solid fa-lock"></i>
+<i class="fa-brands fa-google"></i>
 <h1>Bella Vista Admin</h1>
-<p>Enter your password to view reservations</p>
-<input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
-<button onclick="checkPassword()">Sign In</button>
-<div id="loginError">Incorrect password, try again.</div>
+<p>Sign in using the authorized Google account</p>
+<div id="googleSignInButton"></div>
+<div id="loginError">This Google account is not authorized.</div>
 </div>
 </div>
 
@@ -353,19 +354,12 @@ outline: none;
 </div>
 
 <script>
-// غيّري كلمة السر دي لأي حاجة تانية تحبيها
-// ملحوظة أمان: الباسورد والـ SECRET_KEY هنا لسه ظاهرين في الكود العام (View Source).
-// ده مش حل نهائي - الحل الحقيقي محتاج تسجيل دخول فعلي (Google Sign-In) يتحقق منه السيرفر.
-// اتفقنا نأجل الخطوة دي، والتعديل ده بيركز على إصلاح مشكلة الحذف/الأخطاء الصامتة بس.
-const ADMIN_PASSWORD = "bellavista2026";
+const GOOGLE_CLIENT_ID = "397296338313-tsiqf54ec13q5e138l2vp59css8neqt7.apps.googleusercontent.com";
 const SHEET_URL = "https://script.google.com/macros/s/AKfycby68sowQzuMzwNjKhFVvJHwa4OW6s0pUP9hNzxZSwr-fFGPVObYHZEANL2WCiovEMXe/exec";
-// لازم يكون نفس القيمة بالظبط اللي حطيتيها في SECRET_KEY جوه Code.gs
-const SECRET_KEY = "Qk7mR2vXpL9wT4nY6zJ8s";
+const TOKEN_STORAGE_KEY = "bv_google_id_token";
 
 let allReservations = [];
 
-// بتحول أي نص جاي من المستخدم لنص آمن قبل ما يتحط جوه الصفحة
-// ده بيمنع أي كود HTML/JS حد يكتبه في اسم الحجز أو وصف الصنف من إنه يتنفذ
 function escapeHtml(value) {
 return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
 "&": "&amp;",
@@ -376,33 +370,81 @@ return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
 }[ch]));
 }
 
-// الصورة ممكن تكون رابط كامل (لو اترفعت من جوجل درايف) أو اسم ملف محلي قديم في مجلد images
 function resolveImageSrc(image) {
 if (!image) return "";
 if (/^https?:\/\//i.test(image)) return image;
 return "images/" + encodeURIComponent(image);
 }
 
-function checkPassword() {
-const input = document.getElementById("passwordInput").value;
+function getIdToken() {
+const token = sessionStorage.getItem(TOKEN_STORAGE_KEY);
+if (!token) throw new Error("Please sign in again.");
+return token;
+}
+
+function showLoginError(message) {
 const errorEl = document.getElementById("loginError");
-if (input === ADMIN_PASSWORD) {
-sessionStorage.setItem("bv_admin_auth", "1");
+errorEl.textContent = message || "This Google account is not authorized.";
+errorEl.style.display = "block";
+}
+
+function showDashboard() {
 document.getElementById("loginScreen").style.display = "none";
 document.getElementById("dashboard").style.display = "block";
 loadReservations();
-} else {
-errorEl.style.display = "block";
+}
+
+function handleGoogleCredential(response) {
+if (!response || !response.credential) {
+showLoginError("Google sign-in failed. Please try again.");
+return;
+}
+
+sessionStorage.setItem(TOKEN_STORAGE_KEY, response.credential);
+showDashboard();
+}
+
+function initializeGoogleSignIn() {
+if (!window.google || !google.accounts || !google.accounts.id) {
+setTimeout(initializeGoogleSignIn, 100);
+return;
+}
+
+google.accounts.id.initialize({
+client_id: GOOGLE_CLIENT_ID,
+callback: handleGoogleCredential,
+auto_select: false,
+cancel_on_tap_outside: true,
+});
+
+google.accounts.id.renderButton(
+document.getElementById("googleSignInButton"),
+{ theme: "outline", size: "large", width: 300, text: "signin_with", shape: "rectangular" }
+);
+}
+
+function logout(showMessage) {
+sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+if (window.google && google.accounts && google.accounts.id) {
+google.accounts.id.disableAutoSelect();
+}
+document.getElementById("dashboard").style.display = "none";
+document.getElementById("loginScreen").style.display = "flex";
+if (showMessage) showLoginError(showMessage);
+}
+
+function handleAuthError(data) {
+const message = String((data && (data.message || data.error)) || "");
+if (/unauthorized|token|expired|sign in/i.test(message)) {
+logout("Your session is invalid or expired. Sign in again.");
 }
 }
 
-function logout() {
-sessionStorage.removeItem("bv_admin_auth");
-location.reload();
+window.addEventListener("load", () => {
+initializeGoogleSignIn();
+if (sessionStorage.getItem(TOKEN_STORAGE_KEY)) {
+showDashboard();
 }
-
-document.getElementById("passwordInput").addEventListener("keydown", (e) => {
-if (e.key === "Enter") checkPassword();
 });
 
 function fmtDate(iso) {
@@ -446,11 +488,12 @@ return d >= t;
 function loadReservations() {
 const tbody = document.getElementById("resTableBody");
 tbody.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center;padding:30px;">Loading...</td></tr>`;
-fetch(SHEET_URL + "?action=reservations&key=" + encodeURIComponent(SECRET_KEY) + "&t=" + Date.now(), { cache: "no-store" })
+fetch(SHEET_URL + "?action=reservations&token=" + encodeURIComponent(getIdToken()) + "&t=" + Date.now(), { cache: "no-store" })
 .then((res) => res.json())
 .then((data) => {
-if (data && data.error) {
-tbody.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center;padding:30px;">${escapeHtml(data.error)}</td></tr>`;
+if (data && (data.error || data.result === "error")) {
+handleAuthError(data);
+tbody.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center;padding:30px;">${escapeHtml(data.error || data.message)}</td></tr>`;
 return;
 }
 allReservations = data.reverse();
@@ -637,7 +680,7 @@ method: "POST",
 headers: { "Content-Type": "text/plain" },
 body: JSON.stringify({
 type: "menu_upload_image",
-key: SECRET_KEY,
+token: getIdToken(),
 imageData: base64,
 mimeType: file.type || "image/jpeg",
 filename: file.name || "image.jpg",
@@ -681,8 +724,8 @@ return;
 
 // ملاحظة: originalName بيتبعت زي ما هو، وCode.gs دلوقتي بيعمل trim ليه من ناحيته برضه
 const payload = editingItemName
-? { type: "menu_update", key: SECRET_KEY, originalName: editingItemName, name, description, price, image, badge }
-: { type: "menu_add", key: SECRET_KEY, name, description, price, image, badge };
+? { type: "menu_update", token: getIdToken(), originalName: editingItemName, name, description, price, image, badge }
+: { type: "menu_add", token: getIdToken(), name, description, price, image, badge };
 
 // === التعديل: شيلنا mode:"no-cors" وبقينا نقرأ الرد فعليًا ===
 const saveRes = await fetch(SHEET_URL, {
@@ -692,6 +735,7 @@ body: JSON.stringify(payload),
 });
 const saveData = await saveRes.json();
 if (saveData.result !== "success") {
+handleAuthError(saveData);
 alert("❌ Save failed: " + (saveData.message || "Unknown error from server."));
 console.error("Save failed:", saveData);
 return;
@@ -717,11 +761,12 @@ const cleanName = String(name ?? "").trim();
 fetch(SHEET_URL, {
 method: "POST",
 headers: { "Content-Type": "text/plain" },
-body: JSON.stringify({ type: "menu_delete", key: SECRET_KEY, name: cleanName }),
+body: JSON.stringify({ type: "menu_delete", token: getIdToken(), name: cleanName }),
 })
 .then((res) => res.json())
 .then((data) => {
 if (data.result !== "success") {
+handleAuthError(data);
 alert("❌ Delete failed: " + (data.message || "Unknown error from server."));
 console.error("Delete failed:", data);
 return;
@@ -734,11 +779,6 @@ alert("❌ Delete request failed (network or CORS issue). Check console for deta
 });
 }
 
-if (sessionStorage.getItem("bv_admin_auth") === "1") {
-document.getElementById("loginScreen").style.display = "none";
-document.getElementById("dashboard").style.display = "block";
-loadReservations();
-}
 </script>
 </body>
 </html>
