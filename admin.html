@@ -638,7 +638,7 @@ filename: file.name || "image.jpg",
 });
 const data = await res.json();
 if (data.result !== "success") {
-throw new Error(data.message || "فشل رفع الصورة");
+throw new Error(data.message || "Image upload failed");
 }
 return data.url;
 }
@@ -668,7 +668,7 @@ const newImageUrl = await uploadSelectedImage();
 if (newImageUrl) image = newImageUrl;
 
 if (!image) {
-alert("من فضلك اختاري صورة للطبق.");
+alert("Please select an image for the dish.");
 return;
 }
 
@@ -687,7 +687,7 @@ closeMenuModal();
 setTimeout(loadMenuItems, 800);
 } catch (err) {
 console.error("Failed to save item:", err);
-alert("حصلت مشكلة وإحنا بنحفظ الطبق ده. جربي تاني.");
+alert("Something went wrong saving this item. Please try again.");
 } finally {
 saveBtn.disabled = false;
 saveBtn.textContent = "Save";
@@ -718,4 +718,4 @@ loadReservations();
 }
 </script>
 </body>
-</html>
+</html
