@@ -526,7 +526,7 @@
         <div class="topbar">
             <div class="brand">
                 <i class="fa-solid fa-utensils" aria-hidden="true"></i>
-                Bella Vista <span>Admin Dashboard</span>
+                Bella Vista <span>Admin Dashboard · <strong id="signedInEmail"></strong></span>
             </div>
             <button class="logout-btn" id="logoutBtn" type="button">
                 <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
@@ -666,6 +666,7 @@
 
         const GOOGLE_CLIENT_ID =
             "397296338313-tsiqf54ec13q5e138l2vp59css8neqt7.apps.googleusercontent.com";
+        const ALLOWED_ADMIN_EMAIL = "bellavistarestaurant11@gmail.com";
         const SHEET_URL =
             "https://script.google.com/macros/s/AKfycby68sowQzuMzwNjKhFVvJHwa4OW6s0pUP9hNzxZSwr-fFGPVObYHZEANL2WCiovEMXe/exec";
         const TOKEN_STORAGE_KEY = "bv_google_id_token";
@@ -691,6 +692,25 @@
         const tabReservationsBtn = document.getElementById("tabReservationsBtn");
         const tabMenuBtn = document.getElementById("tabMenuBtn");
         const menuModal = document.getElementById("menuModal");
+        const signedInEmail = document.getElementById("signedInEmail");
+
+        function decodeGoogleCredential(token) {
+            try {
+                const parts = String(token || "").split(".");
+                if (parts.length !== 3) return null;
+
+                const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+                const padded = base64.padEnd(Math.ceil(base64.length / 4) * 4, "=");
+                return JSON.parse(decodeURIComponent(
+                    Array.from(atob(padded))
+                        .map((character) => "%" + character.charCodeAt(0).toString(16).padStart(2, "0"))
+                        .join("")
+                ));
+            } catch (error) {
+                console.error("Could not read Google credential:", error);
+                return null;
+            }
+        }
 
         function setLoginStatus(message, type = "") {
             loginStatus.textContent = message;
@@ -780,16 +800,34 @@
         }
 
         async function verifyAndOpenDashboard(token) {
+            const tokenPayload = decodeGoogleCredential(token);
+            const tokenEmail = String(tokenPayload && tokenPayload.email || "").toLowerCase();
+
+            if (tokenEmail !== ALLOWED_ADMIN_EMAIL.toLowerCase()) {
+                sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+                showLogin();
+                setLoginStatus("This Google account is not authorized.", "error");
+                return;
+            }
+
             setLoginStatus("Verifying account...");
 
             try {
-                await adminPost("admin_verify", {}, token);
+                const verification = await adminPost("admin_verify", {}, token);
+                const verifiedEmail = String(verification.email || "").toLowerCase();
+
+                if (verifiedEmail !== ALLOWED_ADMIN_EMAIL.toLowerCase()) {
+                    throw new Error("This Google account is not authorized.");
+                }
+
                 sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
+                signedInEmail.textContent = verifiedEmail;
                 setLoginStatus("", "");
                 showDashboard();
                 await loadReservations();
             } catch (error) {
                 sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+                signedInEmail.textContent = "";
                 showLogin();
                 setLoginStatus(error.message || "This Google account is not authorized.", "error");
             }
@@ -834,6 +872,7 @@
 
         function logout(message = "") {
             sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+            signedInEmail.textContent = "";
 
             if (window.google && google.accounts && google.accounts.id) {
                 google.accounts.id.disableAutoSelect();
@@ -1325,14 +1364,12 @@
         });
 
         window.addEventListener("load", () => {
+            // Always require a fresh Google sign-in when the admin page is opened.
+            // This prevents a token from a previous account being reused by mistake.
+            sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+            signedInEmail.textContent = "";
+            showLogin();
             initializeGoogleSignIn();
-            const savedToken = sessionStorage.getItem(TOKEN_STORAGE_KEY);
-
-            if (savedToken) {
-                verifyAndOpenDashboard(savedToken);
-            } else {
-                showLogin();
-            }
         });
     </script>
 </body>
