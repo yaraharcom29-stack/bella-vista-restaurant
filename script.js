@@ -28,19 +28,25 @@ if (menuContainer) {
                 const card = document.createElement("div");
                 card.className = "food-card";
 
-                const badgeHTML = item.badge
-                    ? `<span class="badge${item.badge.toLowerCase() === "new" ? " new" : ""}">${item.badge}</span>`
+                const badge = item.Badge || item.badge || "";
+                const name = item.Name || item.name || "";
+                const description = item.Description || item.description || "";
+                const price = item.Price || item.price || "";
+                const image = item.Image || item.image || "";
+
+                const badgeHTML = badge
+                    ? `<span class="badge${badge.toLowerCase() === "new" ? " new" : ""}">${badge}</span>`
                     : "";
 
                 card.innerHTML = `
                     ${badgeHTML}
-                    <img src="images/${item.image}" alt="${item.name}" loading="lazy">
+                    <img src="images/${image}" alt="${name}" loading="lazy">
                     <div class="food-info">
-                        <h3>${item.name}</h3>
+                        <h3>${name}</h3>
                         <div class="rating">⭐⭐⭐⭐⭐</div>
-                        <p>${item.description}</p>
+                        <p>${description}</p>
                         <div class="price-row">
-                            <span class="price">$${item.price}</span>
+                            <span class="price">$${price}</span>
                             <button>Add To Cart</button>
                         </div>
                     </div>
