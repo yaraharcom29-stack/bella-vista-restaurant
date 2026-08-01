@@ -1,970 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Bella Vista | Luxury Restaurant</title>
-
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Bella Vista - مطعم إيطالي فاخر في القاهرة يقدم أشهى الأطباق الإيطالية الأصيلة في أجواء راقية. احجز طاولتك الآن.">
-    <meta name="keywords" content="مطعم إيطالي, مطعم فاخر, مطعم القاهرة, Italian restaurant Cairo, Bella Vista, luxury dining Cairo">
+    <title>Bella Vista | Luxury Italian Restaurant in Cairo</title>
+    <meta name="description" content="Bella Vista is an Italian restaurant in Cairo serving carefully prepared dishes in an elegant atmosphere. Explore the menu and book your table online.">
+    <meta name="keywords" content="Italian restaurant Cairo, luxury restaurant Cairo, Bella Vista restaurant, table reservation Cairo">
     <meta name="author" content="Bella Vista Restaurant">
     <link rel="canonical" href="https://yaraharcom29-stack.github.io/bella-vista-restaurant/">
 
-    <!-- Open Graph Tags (Facebook, WhatsApp, Instagram) -->
     <meta property="og:type" content="restaurant.restaurant">
     <meta property="og:title" content="Bella Vista | Luxury Italian Restaurant in Cairo">
-    <meta property="og:description" content="مطعم إيطالي فاخر في القاهرة يقدم أشهى الأطباق الإيطالية الأصيلة في أجواء راقية. احجز طاولتك الآن.">
+    <meta property="og:description" content="Explore the Bella Vista menu and book your table online.">
     <meta property="og:image" content="https://yaraharcom29-stack.github.io/bella-vista-restaurant/images/hero.jpg">
     <meta property="og:url" content="https://yaraharcom29-stack.github.io/bella-vista-restaurant/">
-    <meta property="og:locale" content="ar_EG">
+    <meta property="og:locale" content="en_US">
 
-    <!-- Twitter Card Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Bella Vista | Luxury Italian Restaurant in Cairo">
-    <meta name="twitter:description" content="مطعم إيطالي فاخر في القاهرة يقدم أشهى الأطباق الإيطالية الأصيلة في أجواء راقية.">
+    <meta name="twitter:description" content="Explore the Bella Vista menu and book your table online.">
     <meta name="twitter:image" content="https://yaraharcom29-stack.github.io/bella-vista-restaurant/images/hero.jpg">
 
-    <!-- Google Font -->
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
-
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome -->
-
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-
-    <!-- CSS -->
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 
-    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-R0TY5JEM1R"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-R0TY5JEM1R');
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { window.dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", "G-R0TY5JEM1R");
     </script>
-
 </head>
-
 <body>
-
-<!-- ================= Loader ================= -->
-
-<div id="loader">
-
-    <h1>Bella Vista</h1>
-
-</div>
-
-<!-- ================= Header ================= -->
-
-<header class="header">
-
-    <div class="logo">
-
-        <i class="fa-solid fa-utensils"></i>
-
-        Bella Vista
-
+    <div id="loader" aria-hidden="true">
+        <h1>Bella Vista</h1>
     </div>
 
-    <div class="menu-toggle">
+    <header class="header">
+        <a class="logo" href="#home" aria-label="Bella Vista home">
+            <i class="fa-solid fa-utensils" aria-hidden="true"></i>
+            Bella Vista
+        </a>
 
-        <i class="fa-solid fa-bars"></i>
-
-    </div>
-
-    <nav>
-
-        <a href="#home">Home</a>
-
-        <a href="#about">About</a>
-
-        <a href="#menu">Menu</a>
-
-        <a href="#gallery">Gallery</a>
-
-        <a href="#chefs">Chefs</a>
-
-        <a href="#reviews">Reviews</a>
-
-        <a href="#contact">Contact</a>
-
-    </nav>
-
-    <div class="header-buttons">
-
-        <button id="darkModeBtn">
-
-            <i class="fa-solid fa-moon"></i>
-
+        <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false">
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
         </button>
 
-        <button class="book-btn">
+        <nav aria-label="Main navigation">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#menu">Menu</a>
+            <a href="#gallery">Gallery</a>
+            <a href="#team">Team</a>
+            <a href="#contact">Contact</a>
+        </nav>
 
-            Book Table
-
-        </button>
-
-    </div>
-
-</header>
-
-<!-- ================= Hero ================= -->
-<section id="home" class="hero">
-
-    <div class="overlay"></div>
-
-    <div class="hero-content">
-
-        <span class="hero-tag">
-
-            ★ Luxury Italian Restaurant
-
-        </span>
-
-        <h1>
-
-            Experience Fine Dining
-
-            <br>
-
-            Like Never Before
-
-        </h1>
-
-        <p>
-
-            Every dish is prepared with passion,
-            premium ingredients,
-            and unforgettable flavor.
-
-        </p>
-
-        <div class="hero-buttons">
-
-            <button class="primary-btn">
-
-                Order Now
-
+        <div class="header-buttons">
+            <button id="darkModeBtn" type="button" aria-label="Use dark mode">
+                <i class="fa-solid fa-moon" aria-hidden="true"></i>
             </button>
-
-            <a href="#menu">
-
-                <button class="secondary-btn">
-
-                    Explore Menu
-
-                </button>
-
-            </a>
-
+            <a class="book-btn" href="#reservation">Book Table</a>
         </div>
+    </header>
 
-        <div class="hero-stats">
+    <main>
+        <section id="home" class="hero">
+            <div class="overlay"></div>
+            <div class="hero-content">
+                <span class="hero-tag">Italian dining in Cairo</span>
+                <h1>Experience Fine Dining Like Never Before</h1>
+                <p>Carefully prepared dishes, quality ingredients, and an elegant dining atmosphere.</p>
+                <div class="hero-buttons">
+                    <a class="primary-btn" href="#reservation">Book a Table</a>
+                    <a class="secondary-btn" href="#menu">Explore Menu</a>
+                </div>
+            </div>
+        </section>
 
-    <div>
-        <h2 class="counter" data-target="15000">0</h2>
-        <span>Happy Customers</span>
-    </div>
+        <section id="about" class="about-section">
+            <div class="about-image">
+                <img src="images/gallery1.jpg" alt="Bella Vista restaurant interior" loading="lazy">
+            </div>
+            <div class="about-content">
+                <span>About Bella Vista</span>
+                <h2>Italian flavours in an elegant setting</h2>
+                <p>Bella Vista brings together Italian-inspired dishes, attentive service, and a comfortable atmosphere for memorable meals in Cairo.</p>
+                <div class="about-features">
+                    <div><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Fresh ingredients</div>
+                    <div><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Carefully prepared dishes</div>
+                    <div><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Online table booking</div>
+                    <div><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Elegant atmosphere</div>
+                </div>
+                <a class="primary-btn" href="#menu">View the Menu</a>
+            </div>
+        </section>
 
-    <div>
-        <h2 class="counter" data-target="25">0</h2>
-        <span>Professional Chefs</span>
-    </div>
-
-    <div>
-        <h2 class="counter" data-target="22">0</h2>
-        <span>Years Experience</span>
-    </div>
-
-</div>
-
-        <p>
-
-            Bella Vista combines authentic Italian recipes,
-            elegant atmosphere,
-            and exceptional service to create an unforgettable dining experience.
-
-        </p>
-
-        <div class="about-features">
-
-            <div>
-
-                <i class="fa-solid fa-circle-check"></i>
-
-                Fresh Organic Ingredients
-
+        <section class="why" aria-labelledby="why-title">
+            <div class="section-title">
+                <span>Why Choose Us</span>
+                <h2 id="why-title">A thoughtful dining experience</h2>
+                <p>Every detail is designed to make your visit comfortable and enjoyable.</p>
             </div>
 
-            <div>
+            <div class="why-container">
+                <article class="why-card">
+                    <i class="fa-solid fa-seedling" aria-hidden="true"></i>
+                    <h3>Fresh Ingredients</h3>
+                    <p>Ingredients are selected carefully for freshness and flavour.</p>
+                </article>
+                <article class="why-card">
+                    <i class="fa-solid fa-bowl-food" aria-hidden="true"></i>
+                    <h3>Italian-Inspired Menu</h3>
+                    <p>A varied menu designed for different tastes and occasions.</p>
+                </article>
+                <article class="why-card">
+                    <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+                    <h3>Easy Reservations</h3>
+                    <p>Choose an available date and time directly from the website.</p>
+                </article>
+                <article class="why-card">
+                    <i class="fa-solid fa-champagne-glasses" aria-hidden="true"></i>
+                    <h3>Elegant Atmosphere</h3>
+                    <p>A welcoming setting for dinners, celebrations, and gatherings.</p>
+                </article>
+            </div>
+        </section>
 
-                <i class="fa-solid fa-circle-check"></i>
-
-                Award Winning Chefs
-
+        <section id="menu" class="menu">
+            <div class="section-title">
+                <span>Our Menu</span>
+                <h2>Chef's Special Dishes</h2>
+                <p>The menu below is loaded automatically from Google Sheets.</p>
             </div>
 
-            <div>
+            <div class="menu-container" aria-live="polite">
+                <p class="menu-status">Loading menu...</p>
+            </div>
+        </section>
 
-                <i class="fa-solid fa-circle-check"></i>
-
-                Fast Premium Delivery
-
+        <section id="gallery" class="gallery">
+            <div class="section-title">
+                <span>Gallery</span>
+                <h2>Inside Bella Vista</h2>
             </div>
 
-            <div>
+            <div class="gallery-grid">
+                <img src="images/gallery1.jpg" alt="Restaurant dining area" loading="lazy">
+                <img src="images/gallery2.jpg" alt="Restaurant table setting" loading="lazy">
+                <img src="images/gallery3.jpg" alt="Italian dish presentation" loading="lazy">
+                <img src="images/gallery4.jpg" alt="Bella Vista interior" loading="lazy">
+                <img src="images/gallery5.jpg" alt="Dining atmosphere" loading="lazy">
+                <img src="images/gallery6.jpg" alt="Restaurant food and decor" loading="lazy">
+            </div>
+        </section>
 
-                <i class="fa-solid fa-circle-check"></i>
-
-                Luxury Interior
-
+        <section id="team" class="team-section">
+            <div class="section-title">
+                <span>Our Kitchen</span>
+                <h2>The team behind every dish</h2>
+                <p>Our kitchen team works together to prepare and present every order with care.</p>
             </div>
 
-        </div>
-
-        <button class="primary-btn">
-
-            Learn More
-
-        </button>
-
-    </div>
-
-</section>
-
-<!-- ================= Why Choose Us ================= -->
-
-<section class="why">
-
-    <h2>
-
-        Why Choose Bella Vista
-
-    </h2>
-
-    <p>
-
-        We don't just serve food...
-        We create unforgettable memories.
-
-    </p>
-
-    <div class="why-container">
-
-        <div class="why-card">
-
-            <i class="fa-solid fa-seedling"></i>
-
-            <h3>
-
-                Fresh Ingredients
-
-            </h3>
-
-            <p>
-
-                Only premium organic ingredients every day.
-
-            </p>
-
-        </div>
-
-        <div class="why-card">
-
-            <i class="fa-solid fa-bowl-food"></i>
-
-            <h3>
-
-                Luxury Dining
-
-            </h3>
-
-            <p>
-
-                Elegant atmosphere with premium service.
-
-            </p>
-
-        </div>
-
-        <div class="why-card">
-
-            <i class="fa-solid fa-truck-fast"></i>
-
-            <h3>
-
-                Fast Delivery
-
-            </h3>
-
-            <p>
-
-                Delivered fresh and hot to your doorstep.
-
-            </p>
-
-        </div>
-
-        <div class="why-card">
-
-            <i class="fa-solid fa-award"></i>
-
-            <h3>
-
-                Award Winning
-
-            </h3>
-
-            <p>
-
-                One of the highest-rated restaurants in town.
-
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-<!-- ================= MENU ================= -->
-
-<section id="menu" class="menu">
-
-    <div class="section-title">
-
-        <span>Our Signature Menu</span>
-
-        <h2>Chef's Special Dishes</h2>
-
-        <p>
-            Carefully crafted meals prepared with the finest ingredients.
-        </p>
-
-    </div>
-
-    <div class="menu-container">
-
-        <div class="food-card">
-
-            <span class="badge">Best Seller</span>
-
-            <img src="images/pizza.jpg" alt="Pizza" loading="lazy">
-
-            <div class="food-info">
-
-                <h3>Italian Pizza</h3>
-
-                <div class="rating">
-                    ⭐⭐⭐⭐⭐
-                </div>
-
-                <p>
-                    Fresh mozzarella, basil and homemade tomato sauce.
-                </p>
-
-                <div class="price-row">
-
-                    <span class="price">$18</span>
-
-                    <button>Add To Cart</button>
-
-                </div>
-
+            <div class="team-container">
+                <article class="team-card">
+                    <img src="images/chef1.jpg" alt="Bella Vista head chef" loading="lazy">
+                    <h3>Head Chef</h3>
+                    <span>Kitchen leadership</span>
+                </article>
+                <article class="team-card">
+                    <img src="images/chef2.jpg" alt="Bella Vista pastry chef" loading="lazy">
+                    <h3>Pastry Team</h3>
+                    <span>Desserts and baked dishes</span>
+                </article>
+                <article class="team-card">
+                    <img src="images/chef3.jpg" alt="Bella Vista kitchen team member" loading="lazy">
+                    <h3>Kitchen Team</h3>
+                    <span>Preparation and service</span>
+                </article>
+            </div>
+        </section>
+
+        <section id="reservation" class="reservation">
+            <div class="section-title">
+                <span>Reservation</span>
+                <h2>Book Your Table</h2>
+                <p>Choose a future date and a time between 12:00 PM and 11:00 PM.</p>
             </div>
 
-        </div>
+            <form id="reservationForm">
+                <input type="text" name="name" placeholder="Full Name" minlength="2" maxlength="80" autocomplete="name" required>
+                <input type="email" name="email" placeholder="Email" maxlength="120" autocomplete="email" required>
+                <input type="tel" name="phone" placeholder="Phone (e.g. +20 100 123 4567)" inputmode="tel" minlength="8" maxlength="20" autocomplete="tel" required>
+                <input type="date" name="date" required>
+                <input type="time" name="time" min="12:00" max="23:00" step="1800" required>
 
-        <div class="food-card">
-
-            <img src="images/pasta.jpg" alt="Pasta" loading="lazy">
-
-            <div class="food-info">
-
-                <h3>Creamy Pasta</h3>
-
-                <div class="rating">
-                    ⭐⭐⭐⭐⭐
+                <div class="hp-field" aria-hidden="true">
+                    <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
                 </div>
 
-                <p>
-                    Homemade creamy pasta with parmesan cheese.
-                </p>
+                <div class="form-message" id="reservationMessage" role="status" aria-live="polite"></div>
+                <button type="submit">Book Now</button>
+            </form>
+        </section>
 
-                <div class="price-row">
-
-                    <span class="price">$16</span>
-
-                    <button>Add To Cart</button>
-
-                </div>
-
+        <section id="contact" class="contact">
+            <div class="section-title">
+                <span>Contact</span>
+                <h2>Get In Touch</h2>
             </div>
 
-        </div>
-
-        <div class="food-card">
-
-            <span class="badge new">New</span>
-
-            <img src="images/burger.jpg" alt="Burger" loading="lazy">
-
-            <div class="food-info">
-
-                <h3>Classic Burger</h3>
-
-                <div class="rating">
-                    ⭐⭐⭐⭐⭐
+            <div class="contact-layout">
+                <div class="contact-container">
+                    <div class="contact-card">
+                        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                        <h3>Location</h3>
+                        <p>Cairo, Egypt</p>
+                    </div>
+                    <div class="contact-card">
+                        <i class="fa-solid fa-phone" aria-hidden="true"></i>
+                        <h3>Phone</h3>
+                        <p>Phone number coming soon</p>
+                    </div>
+                    <div class="contact-card">
+                        <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                        <h3>Email</h3>
+                        <a href="mailto:bellavistarestaurant11@gmail.com">bellavistarestaurant11@gmail.com</a>
+                    </div>
                 </div>
 
-                <p>
-                    Juicy beef burger with cheddar cheese.
-                </p>
+                <form id="contactForm" class="contact-form">
+                    <h3>Send us a message</h3>
+                    <input type="text" name="name" placeholder="Your name" minlength="2" maxlength="80" autocomplete="name" required>
+                    <input type="email" name="email" placeholder="Your email" maxlength="120" autocomplete="email" required>
+                    <textarea name="message" rows="5" placeholder="How can we help?" minlength="5" maxlength="2000" required></textarea>
 
-                <div class="price-row">
+                    <div class="hp-field" aria-hidden="true">
+                        <label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+                    </div>
 
-                    <span class="price">$15</span>
-
-                    <button>Add To Cart</button>
-
-                </div>
-
+                    <div class="form-message" id="contactMessage" role="status" aria-live="polite"></div>
+                    <button type="submit">Send Message</button>
+                </form>
             </div>
 
-        </div>
-
-        <div class="food-card">
-
-            <img src="images/steak.jpg" alt="Steak" loading="lazy">
-
-            <div class="food-info">
-
-                <h3>Premium Steak</h3>
-
-                <div class="rating">
-                    ⭐⭐⭐⭐⭐
-                </div>
-
-                <p>
-                    Tender grilled steak served with vegetables.
-                </p>
-
-                <div class="price-row">
-
-                    <span class="price">$29</span>
-
-                    <button>Add To Cart</button>
-
-                </div>
-
+            <div class="map-wrap">
+                <iframe
+                    title="Bella Vista location in Cairo"
+                    src="https://www.google.com/maps?q=Cairo%2C%20Egypt&output=embed"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    allowfullscreen>
+                </iframe>
             </div>
+        </section>
 
+        <section class="newsletter">
+            <h2>Subscribe To Our Newsletter</h2>
+            <p>Receive our latest offers and restaurant updates.</p>
+            <form id="newsletterForm">
+                <input type="email" name="email" placeholder="Enter your email" autocomplete="email" required>
+                <button type="submit">Subscribe</button>
+            </form>
+            <div class="form-message newsletter-message" id="newsletterMessage" role="status" aria-live="polite"></div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <h2>Bella Vista</h2>
+            <p>Italian dining in Cairo.</p>
         </div>
+        <hr>
+        <p>© 2026 Bella Vista. All Rights Reserved.</p>
+    </footer>
 
-        <div class="food-card">
+    <button id="topBtn" type="button" aria-label="Back to top">↑</button>
 
-            <img src="images/salad.jpg" alt="Salad" loading="lazy">
-
-            <div class="food-info">
-
-                <h3>Healthy Salad</h3>
-
-                <div class="rating">
-                    ⭐⭐⭐⭐⭐
-                </div>
-
-                <p>
-                    Organic vegetables with our signature dressing.
-                </p>
-
-                <div class="price-row">
-
-                    <span class="price">$11</span>
-
-                    <button>Add To Cart</button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="food-card">
-
-            <img src="images/chicken.jpg" alt="Chicken" loading="lazy">
-
-            <div class="food-info">
-
-                <h3>Grilled Chicken</h3>
-
-                <div class="rating">
-                    ⭐⭐⭐⭐⭐
-                </div>
-
-                <p>
-                    Flame grilled chicken with herbs and spices.
-                </p>
-
-                <div class="price-row">
-
-                    <span class="price">$19</span>
-
-                    <button>Add To Cart</button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="food-card">
-
-            <img src="images/dessert.jpg" alt="Dessert" loading="lazy">
-
-            <div class="food-info">
-
-                <h3>Chocolate Cake</h3>
-
-                <div class="rating">
-                    ⭐⭐⭐⭐⭐
-                </div>
-
-                <p>
-                    Rich chocolate cake with premium cocoa.
-                </p>
-
-                <div class="price-row">
-
-                    <span class="price">$9</span>
-
-                    <button>Add To Cart</button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="food-card">
-
-            <img src="images/seafood.jpg" alt="Seafood" loading="lazy">
-
-            <div class="food-info">
-
-                <h3>Seafood Plate</h3>
-
-                <div class="rating">
-                    ⭐⭐⭐⭐⭐
-                </div>
-
-                <p>
-                    Fresh seafood served Mediterranean style.
-                </p>
-
-                <div class="price-row">
-
-                    <span class="price">$32</span>
-
-                    <button>Add To Cart</button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!-- ================= Why Choose Us ================= -->
-
-<section class="why-us" id="why">
-
-    <div class="section-title">
-
-        <span>Why Choose Us</span>
-
-        <h2>Experience Excellence in Every Detail</h2>
-
-    </div>
-
-    <div class="why-container">
-
-        <div class="why-card">
-
-            <i class="fa-solid fa-seedling"></i>
-
-            <h3>Fresh Ingredients</h3>
-
-            <p>We use only premium fresh ingredients to prepare every meal.</p>
-
-        </div>
-
-        <div class="why-card">
-
-            <i class="fa-solid fa-user-chef"></i>
-
-            <h3>Expert Chefs</h3>
-
-            <p>Our professional chefs create unforgettable dining experiences.</p>
-
-        </div>
-
-        <div class="why-card">
-
-            <i class="fa-solid fa-truck-fast"></i>
-
-            <h3>Fast Delivery</h3>
-
-            <p>Enjoy your favorite dishes delivered quickly and safely.</p>
-
-        </div>
-
-        <div class="why-card">
-
-            <i class="fa-solid fa-champagne-glasses"></i>
-
-            <h3>Luxury Atmosphere</h3>
-
-            <p>Elegant interiors designed for comfort and memorable moments.</p>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!-- ================= Gallery ================= -->
-
-<section id="gallery" class="gallery">
-
-    <div class="section-title">
-
-        <span>Gallery</span>
-
-        <h2>Our Restaurant</h2>
-
-    </div>
-
-    <div class="gallery-grid">
-
-        <img src="images/gallery1.jpg" alt="Gallery" loading="lazy">
-
-        <img src="images/gallery2.jpg" alt="Gallery" loading="lazy">
-
-        <img src="images/gallery3.jpg" alt="Gallery" loading="lazy">
-
-        <img src="images/gallery4.jpg" alt="Gallery" loading="lazy">
-
-        <img src="images/gallery5.jpg" alt="Gallery" loading="lazy">
-
-        <img src="images/gallery6.jpg" alt="Gallery" loading="lazy">
-
-    </div>
-
-</section>
-<!-- ================= Our Chefs ================= -->
-
-<section id="chefs" class="chefs">
-
-    <div class="section-title">
-
-        <span>Meet Our Team</span>
-
-        <h2>Professional Chefs</h2>
-
-        <p>
-            Passionate chefs creating unforgettable flavors every day.
-        </p>
-
-    </div>
-
-    <div class="chef-container">
-
-        <div class="chef-card">
-
-            <img src="images/chef1.jpg" alt="Chef" loading="lazy">
-
-            <h3>Marco Rossi</h3>
-
-            <span>Head Chef</span>
-
-            <div class="chef-social">
-
-                <i class="fab fa-facebook-f"></i>
-                <i class="fab fa-instagram"></i>
-                <i class="fab fa-twitter"></i>
-
-            </div>
-
-        </div>
-
-        <div class="chef-card">
-
-            <img src="images/chef2.jpg" alt="Chef" loading="lazy">
-
-            <h3>Sophia Romano</h3>
-
-            <span>Pastry Chef</span>
-
-            <div class="chef-social">
-
-                <i class="fab fa-facebook-f"></i>
-                <i class="fab fa-instagram"></i>
-                <i class="fab fa-twitter"></i>
-
-            </div>
-
-        </div>
-
-        <div class="chef-card">
-
-            <img src="images/chef3.jpg" alt="Chef" loading="lazy">
-
-            <h3>Antonio Bianchi</h3>
-
-            <span>Executive Chef</span>
-
-            <div class="chef-social">
-
-                <i class="fab fa-facebook-f"></i>
-                <i class="fab fa-instagram"></i>
-                <i class="fab fa-twitter"></i>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!-- ================= Testimonials ================= -->
-
-<section id="reviews" class="reviews">
-
-    <div class="section-title">
-
-        <span>Testimonials</span>
-
-        <h2>What Our Customers Say</h2>
-
-    </div>
-
-    <div class="review-container">
-
-        <div class="review-card">
-
-            <p>
-                "The food was amazing and the atmosphere was perfect.
-                Highly recommended!"
-            </p>
-
-            <h3>Emily Johnson</h3>
-
-            <span>⭐⭐⭐⭐⭐</span>
-
-        </div>
-
-        <div class="review-card">
-
-            <p>
-                "One of the best Italian restaurants I've ever visited."
-            </p>
-
-            <h3>Michael Brown</h3>
-
-            <span>⭐⭐⭐⭐⭐</span>
-
-        </div>
-
-        <div class="review-card">
-
-            <p>
-                "Excellent service, beautiful interior and delicious food."
-            </p>
-
-            <h3>Sarah Wilson</h3>
-
-            <span>⭐⭐⭐⭐⭐</span>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!-- ================= Reservation ================= -->
-
-<section class="reservation">
-
-    <div class="section-title">
-
-        <span>Reservation</span>
-
-        <h2>Book Your Table</h2>
-
-    </div>
-
-    <form id="reservationForm">
-
-        <input type="text" name="name" placeholder="Full Name" required>
-
-        <input type="email" name="email" placeholder="Email" required>
-
-        <input type="tel" name="phone" placeholder="Phone" required>
-
-        <input type="date" name="date" required>
-
-        <input type="time" name="time" required>
-
-        <button type="submit">
-
-            Book Now
-
-        </button>
-
-    </form>
-
-</section>
-
-<!-- ================= Contact ================= -->
-
-<section id="contact" class="contact">
-
-    <div class="section-title">
-
-        <span>Contact</span>
-
-        <h2>Get In Touch</h2>
-
-    </div>
-
-    <div class="contact-container">
-
-        <div>
-
-            <i class="fa-solid fa-location-dot"></i>
-
-            <p>Cairo, Egypt</p>
-
-        </div>
-
-        <div>
-
-            <i class="fa-solid fa-phone"></i>
-
-            <p>+20 100 123 4567</p>
-
-        </div>
-
-        <div>
-
-            <i class="fa-solid fa-envelope"></i>
-
-            <p>info@bellavista.com</p>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!-- ================= Newsletter ================= -->
-
-<section class="newsletter">
-
-    <h2>
-
-        Subscribe To Our Newsletter
-
-    </h2>
-
-    <p>
-
-        Receive our latest offers and special discounts.
-
-    </p>
-
-    <form id="newsletterForm">
-
-        <input type="email" name="email" placeholder="Enter your email" required>
-
-        <button>
-
-            Subscribe
-
-        </button>
-
-    </form>
-
-</section>
-
-<!-- ================= Footer ================= -->
-
-<footer>
-
-    <div class="footer-content">
-
-        <h2>Bella Vista</h2>
-
-        <p>
-
-            Luxury Italian Restaurant since 2004.
-
-        </p>
-
-        <div class="footer-social">
-
-            <i class="fab fa-facebook-f"></i>
-
-            <i class="fab fa-instagram"></i>
-
-            <i class="fab fa-twitter"></i>
-
-            <i class="fab fa-linkedin-in"></i>
-
-        </div>
-
-    </div>
-
-    <hr>
-
-    <p class="copyright">
-
-        © 2026 Bella Vista. All Rights Reserved.
-
-    </p>
-
-</footer>
-
-<!-- Back To Top -->
-
-<button id="topBtn">
-
-    ↑
-
-</button>
-
-<script src="script.js"></script>
-
+    <script src="script.js"></script>
 </body>
 </html>

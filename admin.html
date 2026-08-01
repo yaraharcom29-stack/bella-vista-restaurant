@@ -1,784 +1,1339 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
-<title>Bella Vista | Admin Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<style>
-:root {
---gold: #d4af37;
---gold-light: #e8c968;
---bg: #0d0d0d;
---panel: #161616;
---panel-2: #1e1e1e;
---border: #2a2a2a;
---text: #f0f0f0;
---text-dim: #999;
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-font-family: 'Poppins', sans-serif;
-background: var(--bg);
-color: var(--text);
-min-height: 100vh;
-}
-#loginScreen {
-display: flex;
-align-items: center;
-justify-content: center;
-min-height: 100vh;
-padding: 20px;
-}
-.login-card {
-background: var(--panel);
-border: 1px solid var(--border);
-border-radius: 14px;
-padding: 48px 40px;
-max-width: 380px;
-width: 100%;
-text-align: center;
-}
-.login-card i { font-size: 32px; color: var(--gold); margin-bottom: 14px; }
-.login-card h1 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
-.login-card p { color: var(--text-dim); font-size: 13px; margin-bottom: 26px; }
-.login-card input {
-width: 100%;
-padding: 14px 16px;
-border-radius: 10px;
-border: 1px solid var(--border);
-background: var(--panel-2);
-color: var(--text);
-font-size: 15px;
-margin-bottom: 14px;
-outline: none;
-}
-.login-card input:focus { border-color: var(--gold); }
-.login-card button {
-width: 100%;
-padding: 14px;
-border-radius: 10px;
-border: none;
-background: var(--gold);
-color: #111;
-font-weight: 600;
-font-size: 15px;
-cursor: pointer;
-transition: background .2s;
-}
-.login-card button:hover { background: var(--gold-light); }
-#googleSignInButton { display: flex; justify-content: center; min-height: 44px; }
-#loginError { color: #e57373; font-size: 13px; margin-top: 12px; display: none; }
-#dashboard { display: none; }
-.topbar {
-display: flex;
-align-items: center;
-justify-content: space-between;
-padding: 20px 32px;
-border-bottom: 1px solid var(--border);
-background: var(--panel);
-flex-wrap: wrap;
-gap: 16px;
-}
-.brand { display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 700; color: var(--gold); }
-.brand span { color: var(--text); font-weight: 400; font-size: 14px; margin-left: 4px; }
-.logout-btn {
-background: transparent;
-border: 1px solid var(--border);
-color: var(--text-dim);
-padding: 9px 16px;
-border-radius: 8px;
-cursor: pointer;
-font-size: 13px;
-transition: all .2s;
-}
-.logout-btn:hover { border-color: var(--gold); color: var(--gold); }
-.content { padding: 28px 32px 60px; max-width: 1200px; margin: 0 auto; }
-.stats-row {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-gap: 16px;
-margin-bottom: 28px;
-}
-.stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-.stat-card .num { font-size: 28px; font-weight: 700; color: var(--gold); }
-.stat-card .lbl { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
-.toolbar { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
-.toolbar input {
-flex: 1;
-min-width: 200px;
-padding: 11px 16px;
-border-radius: 8px;
-border: 1px solid var(--border);
-background: var(--panel);
-color: var(--text);
-font-size: 14px;
-outline: none;
-}
-.toolbar input:focus { border-color: var(--gold); }
-.toolbar button {
-padding: 11px 18px;
-border-radius: 8px;
-border: 1px solid var(--border);
-background: var(--panel);
-color: var(--text);
-cursor: pointer;
-font-size: 13px;
-transition: all .2s;
-}
-.toolbar button:hover { border-color: var(--gold); color: var(--gold); }
-.table-wrap { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; min-width: 700px; }
-th {
-text-align: left;
-padding: 14px 18px;
-background: var(--panel-2);
-color: var(--text-dim);
-font-size: 12px;
-text-transform: uppercase;
-letter-spacing: .5px;
-border-bottom: 1px solid var(--border);
-}
-td { padding: 16px 18px; border-bottom: 1px solid var(--border); font-size: 14px; }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: rgba(212, 175, 55, 0.04); }
-.row-today td { background: rgba(212, 175, 55, 0.08); }
-.name-cell { font-weight: 600; }
-.muted { color: var(--text-dim); font-size: 13px; }
-.empty-state { text-align: center; padding: 60px 20px; color: var(--text-dim); }
-.empty-state i { font-size: 36px; margin-bottom: 12px; color: var(--border); }
-.tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
-.tab-btn {
-background: transparent;
-border: none;
-color: var(--text-dim);
-padding: 12px 4px;
-margin-right: 24px;
-font-size: 14px;
-font-weight: 500;
-cursor: pointer;
-border-bottom: 2px solid transparent;
-transition: all .2s;
-}
-.tab-btn:hover { color: var(--text); }
-.tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
-.view { display: none; }
-.view.active { display: block; }
-.item-img { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: var(--panel-2); }
-.badge-pill { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: var(--gold); color: #111; }
-.badge-pill.new { background: #4caf50; color: #fff; }
-.action-btns { display: flex; gap: 8px; }
-.icon-btn {
-width: 32px;
-height: 32px;
-border-radius: 8px;
-border: 1px solid var(--border);
-background: var(--panel-2);
-color: var(--text-dim);
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-transition: all .2s;
-}
-.icon-btn:hover { border-color: var(--gold); color: var(--gold); }
-.icon-btn.danger:hover { border-color: #e57373; color: #e57373; }
-.add-btn {
-padding: 11px 20px;
-border-radius: 8px;
-border: none;
-background: var(--gold);
-color: #111;
-font-weight: 600;
-cursor: pointer;
-font-size: 13px;
-display: flex;
-align-items: center;
-gap: 8px;
-transition: background .2s;
-}
-.add-btn:hover { background: var(--gold-light); }
-.modal-overlay {
-display: none;
-position: fixed;
-inset: 0;
-background: rgba(0,0,0,0.7);
-align-items: center;
-justify-content: center;
-padding: 20px;
-z-index: 100;
-}
-.modal-overlay.active { display: flex; }
-.modal-box {
-background: var(--panel);
-border: 1px solid var(--border);
-border-radius: 14px;
-padding: 30px;
-max-width: 440px;
-width: 100%;
-max-height: 90vh;
-overflow-y: auto;
-}
-.modal-box h3 { font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
-.modal-box h3 i { cursor: pointer; color: var(--text-dim); font-size: 16px; }
-.form-group { margin-bottom: 14px; }
-.form-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 6px; }
-.form-group input, .form-group textarea, .form-group select {
-width: 100%;
-padding: 11px 14px;
-border-radius: 8px;
-border: 1px solid var(--border);
-background: var(--panel-2);
-color: var(--text);
-font-family: inherit;
-font-size: 14px;
-outline: none;
-}
-.form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--gold); }
-.modal-actions { display: flex; gap: 10px; margin-top: 22px; }
-.modal-actions button { flex: 1; padding: 12px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; cursor: pointer; }
-.btn-cancel { background: var(--panel-2); color: var(--text-dim); border: 1px solid var(--border) !important; }
-.btn-save { background: var(--gold); color: #111; }
-.btn-save:hover { background: var(--gold-light); }
-@media (max-width: 600px) {
-.topbar, .content { padding-left: 16px; padding-right: 16px; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Bella Vista | Admin Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+        :root {
+            --gold: #d4af37;
+            --gold-light: #e8c968;
+            --bg: #0d0d0d;
+            --panel: #161616;
+            --panel-2: #1e1e1e;
+            --border: #2a2a2a;
+            --text: #f0f0f0;
+            --text-dim: #999;
+            --danger: #e57373;
+            --success: #66bb6a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Poppins", sans-serif;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        #loginScreen {
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 390px;
+            padding: 46px 38px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: var(--panel);
+            text-align: center;
+        }
+
+        .login-card > i {
+            margin-bottom: 14px;
+            color: var(--gold);
+            font-size: 34px;
+        }
+
+        .login-card h1 {
+            margin-bottom: 7px;
+            font-size: 21px;
+        }
+
+        .login-card p {
+            margin-bottom: 25px;
+            color: var(--text-dim);
+            font-size: 13px;
+        }
+
+        #googleSignInButton {
+            min-height: 44px;
+            display: flex;
+            justify-content: center;
+        }
+
+        #loginStatus {
+            min-height: 21px;
+            margin-top: 14px;
+            color: var(--text-dim);
+            font-size: 13px;
+        }
+
+        #loginStatus.error {
+            color: var(--danger);
+        }
+
+        #loginStatus.success {
+            color: var(--success);
+        }
+
+        #dashboard {
+            display: none;
+        }
+
+        .topbar {
+            padding: 19px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-bottom: 1px solid var(--border);
+            background: var(--panel);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--gold);
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .brand span {
+            margin-left: 3px;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+        .logout-btn {
+            padding: 9px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-dim);
+        }
+
+        .logout-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 28px 30px 60px;
+        }
+
+        .tabs {
+            margin-bottom: 24px;
+            display: flex;
+            gap: 25px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            padding: 12px 3px;
+            border: 0;
+            border-bottom: 2px solid transparent;
+            background: transparent;
+            color: var(--text-dim);
+        }
+
+        .tab-btn.active {
+            border-bottom-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .stats-row {
+            margin-bottom: 26px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--panel);
+        }
+
+        .stat-card .num {
+            color: var(--gold);
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .stat-card .lbl {
+            margin-top: 3px;
+            color: var(--text-dim);
+            font-size: 13px;
+        }
+
+        .toolbar {
+            margin-bottom: 17px;
+            display: flex;
+            gap: 11px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar input {
+            flex: 1;
+            min-width: 220px;
+            padding: 11px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            background: var(--panel);
+            color: var(--text);
+        }
+
+        .toolbar input:focus {
+            border-color: var(--gold);
+        }
+
+        .toolbar button,
+        .add-btn {
+            padding: 11px 17px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--panel);
+            color: var(--text);
+        }
+
+        .toolbar button:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .add-btn {
+            border: 0;
+            background: var(--gold);
+            color: #111;
+            font-weight: 600;
+        }
+
+        .add-btn:hover {
+            background: var(--gold-light);
+        }
+
+        .table-wrap {
+            overflow: hidden;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--panel);
+        }
+
+        table {
+            width: 100%;
+            min-width: 720px;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px 17px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        th {
+            background: var(--panel-2);
+            color: var(--text-dim);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .row-today td {
+            background: rgba(212, 175, 55, 0.08);
+        }
+
+        .name-cell {
+            font-weight: 600;
+        }
+
+        .muted {
+            color: var(--text-dim);
+            font-size: 13px;
+        }
+
+        .empty-state {
+            display: none;
+            padding: 48px 20px;
+            color: var(--text-dim);
+            text-align: center;
+        }
+
+        .empty-state i {
+            margin-bottom: 10px;
+            color: #444;
+            font-size: 35px;
+        }
+
+        .item-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .item-img {
+            width: 46px;
+            height: 46px;
+            border-radius: 8px;
+            background: var(--panel-2);
+            object-fit: cover;
+        }
+
+        .badge-pill {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: var(--gold);
+            color: #111;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-pill.new {
+            background: #4caf50;
+            color: #fff;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 7px;
+        }
+
+        .icon-btn {
+            width: 33px;
+            height: 33px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--panel-2);
+            color: var(--text-dim);
+        }
+
+        .icon-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .icon-btn.danger:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            padding: 20px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.72);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 450px;
+            max-height: 92vh;
+            overflow-y: auto;
+            padding: 28px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: var(--panel);
+        }
+
+        .modal-title {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-close {
+            border: 0;
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            margin-bottom: 6px;
+            display: block;
+            color: var(--text-dim);
+            font-size: 12px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 11px 13px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            background: var(--panel-2);
+            color: var(--text);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--gold);
+        }
+
+        .preview-wrap {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .preview-wrap img {
+            max-width: 130px;
+            max-height: 130px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .modal-message {
+            min-height: 21px;
+            margin-top: 5px;
+            color: var(--danger);
+            font-size: 13px;
+        }
+
+        .modal-actions {
+            margin-top: 18px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .btn-cancel {
+            border: 1px solid var(--border);
+            background: var(--panel-2);
+            color: var(--text-dim);
+        }
+
+        .btn-save {
+            border: 0;
+            background: var(--gold);
+            color: #111;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.65;
+        }
+
+        @media (max-width: 650px) {
+            .topbar,
+            .content {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .brand span {
+                display: none;
+            }
+
+            .tabs {
+                gap: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-<div id="loginScreen">
-<div class="login-card">
-<i class="fa-brands fa-google"></i>
-<h1>Bella Vista Admin</h1>
-<p>Sign in using the authorized Google account</p>
-<div id="googleSignInButton"></div>
-<div id="loginError">This Google account is not authorized.</div>
-</div>
-</div>
+    <div id="loginScreen">
+        <div class="login-card">
+            <i class="fa-brands fa-google" aria-hidden="true"></i>
+            <h1>Bella Vista Admin</h1>
+            <p>Sign in using the authorized Google account.</p>
+            <div id="googleSignInButton"></div>
+            <div id="loginStatus" role="status" aria-live="polite"></div>
+        </div>
+    </div>
 
-<div id="dashboard">
-<div class="topbar">
-<div class="brand"><i class="fa-solid fa-utensils"></i> Bella Vista <span>Admin Dashboard</span></div>
-<button class="logout-btn" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</button>
-</div>
-<div class="content">
-<div class="tabs">
-<button class="tab-btn active" id="tabReservationsBtn" onclick="switchTab('reservations')">
-<i class="fa-solid fa-calendar-check"></i> Reservations
-</button>
-<button class="tab-btn" id="tabMenuBtn" onclick="switchTab('menu')">
-<i class="fa-solid fa-utensils"></i> Menu
-</button>
-</div>
+    <div id="dashboard">
+        <div class="topbar">
+            <div class="brand">
+                <i class="fa-solid fa-utensils" aria-hidden="true"></i>
+                Bella Vista <span>Admin Dashboard</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn" type="button">
+                <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
+                Sign Out
+            </button>
+        </div>
 
-<div class="view active" id="reservationsView">
-<div class="stats-row">
-<div class="stat-card"><div class="num" id="statTotal">–</div><div class="lbl">Total Reservations</div></div>
-<div class="stat-card"><div class="num" id="statToday">–</div><div class="lbl">For Today</div></div>
-<div class="stat-card"><div class="num" id="statUpcoming">–</div><div class="lbl">Upcoming</div></div>
-</div>
-<div class="toolbar">
-<input type="text" id="searchInput" placeholder="Search by name, email or phone..." oninput="renderTable()">
-<button onclick="loadReservations()"><i class="fa-solid fa-rotate"></i> Refresh</button>
-</div>
-<div class="table-wrap">
-<table id="resTable">
-<thead>
-<tr><th>Name</th><th>Contact</th><th>Reservation Date</th><th>Time</th><th>Submitted</th></tr>
-</thead>
-<tbody id="resTableBody"></tbody>
-</table>
-<div class="empty-state" id="emptyState" style="display:none;">
-<i class="fa-solid fa-calendar-xmark"></i>
-<div>No reservations found</div>
-</div>
-</div>
-</div>
+        <div class="content">
+            <div class="tabs">
+                <button class="tab-btn active" id="tabReservationsBtn" type="button">
+                    <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
+                    Reservations
+                </button>
+                <button class="tab-btn" id="tabMenuBtn" type="button">
+                    <i class="fa-solid fa-utensils" aria-hidden="true"></i>
+                    Menu
+                </button>
+            </div>
 
-<div class="view" id="menuView">
-<div class="toolbar">
-<input type="text" id="menuSearchInput" placeholder="Search dishes..." oninput="renderMenuTable()">
-<button class="add-btn" onclick="openMenuModal()"><i class="fa-solid fa-plus"></i> Add Item</button>
-</div>
-<div class="table-wrap">
-<table id="menuTable">
-<thead>
-<tr><th>Dish</th><th>Description</th><th>Price</th><th>Badge</th><th></th></tr>
-</thead>
-<tbody id="menuTableBody"></tbody>
-</table>
-<div class="empty-state" id="menuEmptyState" style="display:none;">
-<i class="fa-solid fa-utensils"></i>
-<div>No menu items found</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+            <section class="view active" id="reservationsView">
+                <div class="stats-row">
+                    <div class="stat-card"><div class="num" id="statTotal">–</div><div class="lbl">Total Reservations</div></div>
+                    <div class="stat-card"><div class="num" id="statToday">–</div><div class="lbl">For Today</div></div>
+                    <div class="stat-card"><div class="num" id="statUpcoming">–</div><div class="lbl">Upcoming</div></div>
+                </div>
 
-<div class="modal-overlay" id="menuModal">
-<div class="modal-box">
-<h3>
-<span id="menuModalTitle">Add Dish</span>
-<i class="fa-solid fa-xmark" onclick="closeMenuModal()"></i>
-</h3>
-<div class="form-group"><label>Dish Name</label><input type="text" id="menuName" placeholder="e.g. Margherita Pizza"></div>
-<div class="form-group"><label>Description</label><textarea id="menuDescription" rows="2" placeholder="Short description..."></textarea></div>
-<div class="form-group"><label>Price ($)</label><input type="number" id="menuPrice" placeholder="18"></div>
-<div class="form-group">
-<label>Dish Image</label>
-<input type="file" id="menuImageFile" accept="image/*">
-<div id="menuImagePreviewWrap" style="margin-top:10px; display:none;">
-<img id="menuImagePreview" style="max-width:120px; border-radius:8px;" alt="preview">
-</div>
-<input type="hidden" id="menuImage">
-</div>
-<div class="form-group">
-<label>Badge (optional)</label>
-<select id="menuBadge">
-<option value="">None</option>
-<option value="Best Seller">Best Seller</option>
-<option value="New">New</option>
-</select>
-</div>
-<div class="modal-actions">
-<button class="btn-cancel" onclick="closeMenuModal()">Cancel</button>
-<button class="btn-save" id="menuSaveBtn" onclick="saveMenuItem()">Save</button>
-</div>
-</div>
-</div>
+                <div class="toolbar">
+                    <input type="search" id="searchInput" placeholder="Search by name, email or phone...">
+                    <button type="button" id="refreshReservationsBtn">
+                        <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+                        Refresh
+                    </button>
+                </div>
 
-<script>
-const GOOGLE_CLIENT_ID = "397296338313-tsiqf54ec13q5e138l2vp59css8neqt7.apps.googleusercontent.com";
-const SHEET_URL = "https://script.google.com/macros/s/AKfycby68sowQzuMzwNjKhFVvJHwa4OW6s0pUP9hNzxZSwr-fFGPVObYHZEANL2WCiovEMXe/exec";
-const TOKEN_STORAGE_KEY = "bv_google_id_token";
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Reservation Date</th>
+                                <th>Time</th>
+                                <th>Submitted</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resTableBody"></tbody>
+                    </table>
+                    <div class="empty-state" id="emptyState">
+                        <i class="fa-solid fa-calendar-xmark" aria-hidden="true"></i>
+                        <div>No reservations found</div>
+                    </div>
+                </div>
+            </section>
 
-let allReservations = [];
+            <section class="view" id="menuView">
+                <div class="toolbar">
+                    <input type="search" id="menuSearchInput" placeholder="Search dishes...">
+                    <button class="add-btn" id="addMenuBtn" type="button">
+                        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                        Add Item
+                    </button>
+                </div>
 
-function escapeHtml(value) {
-return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
-"&": "&amp;",
-"<": "&lt;",
-">": "&gt;",
-'"': "&quot;",
-"'": "&#39;",
-}[ch]));
-}
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Dish</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th>Badge</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="menuTableBody"></tbody>
+                    </table>
+                    <div class="empty-state" id="menuEmptyState">
+                        <i class="fa-solid fa-utensils" aria-hidden="true"></i>
+                        <div>No menu items found</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
 
-function resolveImageSrc(image) {
-if (!image) return "";
-if (/^https?:\/\//i.test(image)) return image;
-return "images/" + encodeURIComponent(image);
-}
+    <div class="modal-overlay" id="menuModal" role="dialog" aria-modal="true" aria-labelledby="menuModalTitle">
+        <div class="modal-box">
+            <div class="modal-title">
+                <h3 id="menuModalTitle">Add Dish</h3>
+                <button class="modal-close" id="closeModalBtn" type="button" aria-label="Close dialog">×</button>
+            </div>
 
-function getIdToken() {
-const token = sessionStorage.getItem(TOKEN_STORAGE_KEY);
-if (!token) throw new Error("Please sign in again.");
-return token;
-}
+            <div class="form-group">
+                <label for="menuName">Dish Name</label>
+                <input type="text" id="menuName" maxlength="100" placeholder="e.g. Margherita Pizza">
+            </div>
 
-function showLoginError(message) {
-const errorEl = document.getElementById("loginError");
-errorEl.textContent = message || "This Google account is not authorized.";
-errorEl.style.display = "block";
-}
+            <div class="form-group">
+                <label for="menuDescription">Description</label>
+                <textarea id="menuDescription" rows="3" maxlength="500" placeholder="Short description..."></textarea>
+            </div>
 
-function showDashboard() {
-document.getElementById("loginScreen").style.display = "none";
-document.getElementById("dashboard").style.display = "block";
-loadReservations();
-}
+            <div class="form-group">
+                <label for="menuPrice">Price ($)</label>
+                <input type="number" id="menuPrice" min="0" max="1000000" step="0.01" placeholder="18">
+            </div>
 
-function handleGoogleCredential(response) {
-if (!response || !response.credential) {
-showLoginError("Google sign-in failed. Please try again.");
-return;
-}
+            <div class="form-group">
+                <label for="menuImageFile">Dish Image (maximum 5 MB)</label>
+                <input type="file" id="menuImageFile" accept="image/jpeg,image/png,image/webp,image/gif">
+                <div class="preview-wrap" id="menuImagePreviewWrap">
+                    <img id="menuImagePreview" alt="Selected dish preview">
+                </div>
+                <input type="hidden" id="menuImage">
+            </div>
 
-sessionStorage.setItem(TOKEN_STORAGE_KEY, response.credential);
-showDashboard();
-}
+            <div class="form-group">
+                <label for="menuBadge">Badge</label>
+                <select id="menuBadge">
+                    <option value="">None</option>
+                    <option value="Best Seller">Best Seller</option>
+                    <option value="New">New</option>
+                </select>
+            </div>
 
-function initializeGoogleSignIn() {
-if (!window.google || !google.accounts || !google.accounts.id) {
-setTimeout(initializeGoogleSignIn, 100);
-return;
-}
+            <div class="modal-message" id="menuModalMessage" role="status" aria-live="polite"></div>
 
-google.accounts.id.initialize({
-client_id: GOOGLE_CLIENT_ID,
-callback: handleGoogleCredential,
-auto_select: false,
-cancel_on_tap_outside: true,
-});
+            <div class="modal-actions">
+                <button class="btn-cancel" id="cancelModalBtn" type="button">Cancel</button>
+                <button class="btn-save" id="menuSaveBtn" type="button">Save</button>
+            </div>
+        </div>
+    </div>
 
-google.accounts.id.renderButton(
-document.getElementById("googleSignInButton"),
-{ theme: "outline", size: "large", width: 300, text: "signin_with", shape: "rectangular" }
-);
-}
+    <script>
+        "use strict";
 
-function logout(showMessage) {
-sessionStorage.removeItem(TOKEN_STORAGE_KEY);
-if (window.google && google.accounts && google.accounts.id) {
-google.accounts.id.disableAutoSelect();
-}
-document.getElementById("dashboard").style.display = "none";
-document.getElementById("loginScreen").style.display = "flex";
-if (showMessage) showLoginError(showMessage);
-}
+        const GOOGLE_CLIENT_ID =
+            "397296338313-tsiqf54ec13q5e138l2vp59css8neqt7.apps.googleusercontent.com";
+        const SHEET_URL =
+            "https://script.google.com/macros/s/AKfycby68sowQzuMzwNjKhFVvJHwa4OW6s0pUP9hNzxZSwr-fFGPVObYHZEANL2WCiovEMXe/exec";
+        const TOKEN_STORAGE_KEY = "bv_google_id_token";
+        const REQUEST_TIMEOUT_MS = 25000;
+        const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+        const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+        const PLACEHOLDER_IMAGE =
+            "data:image/svg+xml;charset=UTF-8," +
+            encodeURIComponent(
+                '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500"><rect width="800" height="500" fill="#252525"/><text x="400" y="255" text-anchor="middle" font-family="Arial" font-size="32" fill="#999">Bella Vista</text></svg>'
+            );
 
-function handleAuthError(data) {
-const message = String((data && (data.message || data.error)) || "");
-if (/unauthorized|token|expired|sign in/i.test(message)) {
-logout("Your session is invalid or expired. Sign in again.");
-}
-}
+        let allReservations = [];
+        let allMenuItems = [];
+        let editingItemName = null;
+        let googleButtonRendered = false;
 
-window.addEventListener("load", () => {
-initializeGoogleSignIn();
-if (sessionStorage.getItem(TOKEN_STORAGE_KEY)) {
-showDashboard();
-}
-});
+        const loginScreen = document.getElementById("loginScreen");
+        const dashboard = document.getElementById("dashboard");
+        const loginStatus = document.getElementById("loginStatus");
+        const reservationsView = document.getElementById("reservationsView");
+        const menuView = document.getElementById("menuView");
+        const tabReservationsBtn = document.getElementById("tabReservationsBtn");
+        const tabMenuBtn = document.getElementById("tabMenuBtn");
+        const menuModal = document.getElementById("menuModal");
 
-function fmtDate(iso) {
-if (!iso) return "-";
-const d = new Date(iso);
-if (isNaN(d)) return iso;
-return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-}
+        function setLoginStatus(message, type = "") {
+            loginStatus.textContent = message;
+            loginStatus.className = type;
+        }
 
-function fmtTime(iso) {
-if (!iso) return "-";
-// لو الوقت متسجل كنص بسيط زي "17:22" (مش تاريخ كامل)، نحوّله يدويًا لنفس شكل الـ 12 ساعة
-const simpleMatch = String(iso).match(/^(\d{1,2}):(\d{2})$/);
-if (simpleMatch) {
-let hours = parseInt(simpleMatch[1], 10);
-const minutes = simpleMatch[2];
-const ampm = hours >= 12 ? "PM" : "AM";
-hours = hours % 12 || 12;
-return `${hours}:${minutes} ${ampm}`;
-}
-const d = new Date(iso);
-if (isNaN(d)) return iso;
-return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
-}
+        async function fetchJson(url, options = {}) {
+            const controller = new AbortController();
+            const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-function isToday(iso) {
-if (!iso) return false;
-const d = new Date(iso);
-const t = new Date();
-return d.getFullYear() === t.getFullYear() && d.getMonth() === t.getMonth() && d.getDate() === t.getDate();
-}
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    signal: controller.signal,
+                });
+                const text = await response.text();
+                let data;
 
-function isUpcoming(iso) {
-if (!iso) return false;
-const d = new Date(iso);
-const t = new Date();
-t.setHours(0, 0, 0, 0);
-return d >= t;
-}
+                try {
+                    data = JSON.parse(text);
+                } catch (error) {
+                    console.error("Non-JSON response:", text);
+                    throw new Error("The server returned an invalid response.");
+                }
 
-function loadReservations() {
-const tbody = document.getElementById("resTableBody");
-tbody.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center;padding:30px;">Loading...</td></tr>`;
-fetch(SHEET_URL + "?action=reservations&token=" + encodeURIComponent(getIdToken()) + "&t=" + Date.now(), { cache: "no-store" })
-.then((res) => res.json())
-.then((data) => {
-if (data && (data.error || data.result === "error")) {
-handleAuthError(data);
-tbody.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center;padding:30px;">${escapeHtml(data.error || data.message)}</td></tr>`;
-return;
-}
-allReservations = data.reverse();
-updateStats();
-renderTable();
-})
-.catch((err) => {
-console.error("Failed to load reservations:", err);
-tbody.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center;padding:30px;">Failed to load data. Try refreshing.</td></tr>`;
-});
-}
+                if (!response.ok) {
+                    throw new Error(data.message || `Request failed (${response.status})`);
+                }
 
-function updateStats() {
-document.getElementById("statTotal").textContent = allReservations.length;
-document.getElementById("statToday").textContent = allReservations.filter(r => isToday(r["Reservation Date"])).length;
-document.getElementById("statUpcoming").textContent = allReservations.filter(r => isUpcoming(r["Reservation Date"])).length;
-}
+                return data;
+            } catch (error) {
+                if (error.name === "AbortError") {
+                    throw new Error("The request took too long. Please try again.");
+                }
 
-function renderTable() {
-const query = document.getElementById("searchInput").value.toLowerCase();
-const tbody = document.getElementById("resTableBody");
-const emptyState = document.getElementById("emptyState");
-const filtered = allReservations.filter((r) => {
-const haystack = `${r.Name || ""} ${r.Email || ""} ${r.Phone || ""}`.toLowerCase();
-return haystack.includes(query);
-});
-if (filtered.length === 0) {
-tbody.innerHTML = "";
-emptyState.style.display = "block";
-return;
-}
-emptyState.style.display = "none";
-tbody.innerHTML = filtered.map((r) => `
-<tr class="${isToday(r['Reservation Date']) ? 'row-today' : ''}">
-<td class="name-cell">${escapeHtml(r.Name || "-")}</td>
-<td>
-<div>${escapeHtml(r.Email || "-")}</div>
-<div class="muted">${escapeHtml(r.Phone || "-")}</div>
-</td>
-<td>${fmtDate(r["Reservation Date"])}</td>
-<td>${fmtTime(r["Reservation Time"])}</td>
-<td class="muted">${fmtDate(r["Date Submitted"])}</td>
-</tr>
-`).join("");
-}
+                throw error;
+            } finally {
+                window.clearTimeout(timeout);
+            }
+        }
 
-function switchTab(tab) {
-document.getElementById("tabReservationsBtn").classList.toggle("active", tab === "reservations");
-document.getElementById("tabMenuBtn").classList.toggle("active", tab === "menu");
-document.getElementById("reservationsView").classList.toggle("active", tab === "reservations");
-document.getElementById("menuView").classList.toggle("active", tab === "menu");
-if (tab === "menu" && allMenuItems.length === 0) loadMenuItems();
-}
+        function getIdToken() {
+            const token = sessionStorage.getItem(TOKEN_STORAGE_KEY);
 
-let allMenuItems = [];
-let editingItemName = null;
+            if (!token) {
+                throw new Error("Please sign in again.");
+            }
 
-function loadMenuItems() {
-const tbody = document.getElementById("menuTableBody");
-tbody.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center;padding:30px;">Loading...</td></tr>`;
-fetch(SHEET_URL + "?t=" + Date.now(), { cache: "no-store" })
-.then((res) => res.json())
-.then((data) => {
-allMenuItems = data;
-renderMenuTable();
-})
-.catch((err) => {
-console.error("Failed to load menu:", err);
-tbody.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center;padding:30px;">Failed to load menu.</td></tr>`;
-});
-}
+            return token;
+        }
 
-function renderMenuTable() {
-const query = document.getElementById("menuSearchInput").value.toLowerCase();
-const tbody = document.getElementById("menuTableBody");
-const emptyState = document.getElementById("menuEmptyState");
-const filtered = allMenuItems.filter((item) =>
-(item.name || "").toLowerCase().includes(query)
-);
-if (filtered.length === 0) {
-tbody.innerHTML = "";
-emptyState.style.display = "block";
-return;
-}
-emptyState.style.display = "none";
-tbody.innerHTML = filtered.map((item) => {
-// بنلاقي مكان الصنف ده في المصفوفة الأصلية (مش المفلترة) عشان نرجعله صح بعدين
-const realIndex = allMenuItems.indexOf(item);
-return `
-<tr>
-<td>
-<div style="display:flex;align-items:center;gap:12px;">
-<img class="item-img" src="${resolveImageSrc(item.image)}" onerror="this.style.opacity=0.2" alt="">
-<span class="name-cell">${escapeHtml(item.name)}</span>
-</div>
-</td>
-<td class="muted">${escapeHtml(item.description)}</td>
-<td>$${escapeHtml(item.price)}</td>
-<td>${item.badge ? `<span class="badge-pill${item.badge.toLowerCase() === 'new' ? ' new' : ''}">${escapeHtml(item.badge)}</span>` : '<span class="muted">-</span>'}</td>
-<td>
-<div class="action-btns">
-<button class="icon-btn" onclick="openMenuModalByIndex(${realIndex})" title="Edit">
-<i class="fa-solid fa-pen"></i>
-</button>
-<button class="icon-btn danger" onclick="deleteMenuItemByIndex(${realIndex})" title="Delete">
-<i class="fa-solid fa-trash"></i>
-</button>
-</div>
-</td>
-</tr>
-`;
-}).join("");
-}
+        async function adminPost(type, payload = {}, explicitToken = null) {
+            const token = explicitToken || getIdToken();
+            const data = await fetchJson(SHEET_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "text/plain;charset=utf-8",
+                },
+                body: JSON.stringify({
+                    ...payload,
+                    type,
+                    token,
+                }),
+            });
 
-// بتاخد رقم الصنف في المصفوفة بدل ما تاخد بياناته كاملة جوه الـ onclick
-// ده أأمن وأبسط من إننا نحط JSON خام جوه attribute في الصفحة
-function openMenuModalByIndex(index) {
-openMenuModal(allMenuItems[index]);
-}
+            if (data.result !== "success") {
+                const message = String(data.message || data.error || "Request failed");
 
-function deleteMenuItemByIndex(index) {
-const item = allMenuItems[index];
-if (item) deleteMenuItem(item.name);
-}
+                if (/unauthorized|token|expired|sign in/i.test(message)) {
+                    logout("Your session is invalid or expired. Sign in again.");
+                }
 
-function openMenuModal(item) {
-document.getElementById("menuModal").classList.add("active");
-document.getElementById("menuImageFile").value = "";
-if (item) {
-editingItemName = item.name;
-document.getElementById("menuModalTitle").textContent = "Edit Dish";
-document.getElementById("menuName").value = item.name || "";
-document.getElementById("menuDescription").value = item.description || "";
-document.getElementById("menuPrice").value = item.price || "";
-document.getElementById("menuImage").value = item.image || "";
-document.getElementById("menuBadge").value = item.badge || "";
-if (item.image) {
-document.getElementById("menuImagePreview").src = resolveImageSrc(item.image);
-document.getElementById("menuImagePreviewWrap").style.display = "block";
-} else {
-document.getElementById("menuImagePreviewWrap").style.display = "none";
-}
-} else {
-editingItemName = null;
-document.getElementById("menuModalTitle").textContent = "Add Dish";
-document.getElementById("menuName").value = "";
-document.getElementById("menuDescription").value = "";
-document.getElementById("menuPrice").value = "";
-document.getElementById("menuImage").value = "";
-document.getElementById("menuBadge").value = "";
-document.getElementById("menuImagePreviewWrap").style.display = "none";
-}
-}
+                throw new Error(message);
+            }
 
-document.getElementById("menuImageFile").addEventListener("change", function () {
-const file = this.files[0];
-if (!file) return;
-const reader = new FileReader();
-reader.onload = function (e) {
-document.getElementById("menuImagePreview").src = e.target.result;
-document.getElementById("menuImagePreviewWrap").style.display = "block";
-};
-reader.readAsDataURL(file);
-});
+            return data;
+        }
 
-function fileToBase64(file) {
-return new Promise((resolve, reject) => {
-const reader = new FileReader();
-reader.onload = () => resolve(reader.result.split(",")[1]); // بنشيل جزء "data:image/...;base64," ونسيب النص بس
-reader.onerror = reject;
-reader.readAsDataURL(file);
-});
-}
+        function showLogin() {
+            dashboard.style.display = "none";
+            loginScreen.style.display = "flex";
+        }
 
-// بترفع الصورة المختارة لجوجل درايف وترجع رابطها، أو null لو مفيش صورة جديدة متختارة
-async function uploadSelectedImage() {
-const fileInput = document.getElementById("menuImageFile");
-const file = fileInput.files[0];
-if (!file) return null;
+        function showDashboard() {
+            loginScreen.style.display = "none";
+            dashboard.style.display = "block";
+        }
 
-const base64 = await fileToBase64(file);
-const res = await fetch(SHEET_URL, {
-method: "POST",
-headers: { "Content-Type": "text/plain" },
-body: JSON.stringify({
-type: "menu_upload_image",
-token: getIdToken(),
-imageData: base64,
-mimeType: file.type || "image/jpeg",
-filename: file.name || "image.jpg",
-}),
-});
-const data = await res.json();
-if (data.result !== "success") {
-throw new Error(data.message || "Image upload failed");
-}
-return data.url;
-}
+        async function verifyAndOpenDashboard(token) {
+            setLoginStatus("Verifying account...");
 
-function closeMenuModal() {
-document.getElementById("menuModal").classList.remove("active");
-}
+            try {
+                await adminPost("admin_verify", {}, token);
+                sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
+                setLoginStatus("", "");
+                showDashboard();
+                await loadReservations();
+            } catch (error) {
+                sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+                showLogin();
+                setLoginStatus(error.message || "This Google account is not authorized.", "error");
+            }
+        }
 
-async function saveMenuItem() {
-const name = document.getElementById("menuName").value.trim();
-const description = document.getElementById("menuDescription").value.trim();
-const price = document.getElementById("menuPrice").value.trim();
-const badge = document.getElementById("menuBadge").value;
-let image = document.getElementById("menuImage").value.trim(); // الرابط القديم لو بنعدّل ومختارناش صورة جديدة
+        function handleGoogleCredential(response) {
+            if (!response || !response.credential) {
+                setLoginStatus("Google sign-in failed. Please try again.", "error");
+                return;
+            }
 
-if (!name || !price) {
-alert("Please fill in at least the name and price.");
-return;
-}
+            verifyAndOpenDashboard(response.credential);
+        }
 
-const saveBtn = document.getElementById("menuSaveBtn");
-saveBtn.disabled = true;
-saveBtn.textContent = "Saving...";
+        function initializeGoogleSignIn() {
+            if (!window.google || !google.accounts || !google.accounts.id) {
+                window.setTimeout(initializeGoogleSignIn, 100);
+                return;
+            }
 
-try {
-const newImageUrl = await uploadSelectedImage();
-if (newImageUrl) image = newImageUrl;
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleGoogleCredential,
+                auto_select: false,
+                cancel_on_tap_outside: true,
+            });
 
-if (!image) {
-alert("Please select an image for the dish.");
-return;
-}
+            if (!googleButtonRendered) {
+                google.accounts.id.renderButton(
+                    document.getElementById("googleSignInButton"),
+                    {
+                        theme: "outline",
+                        size: "large",
+                        width: 300,
+                        text: "signin_with",
+                        shape: "rectangular",
+                    }
+                );
+                googleButtonRendered = true;
+            }
+        }
 
-// ملاحظة: originalName بيتبعت زي ما هو، وCode.gs دلوقتي بيعمل trim ليه من ناحيته برضه
-const payload = editingItemName
-? { type: "menu_update", token: getIdToken(), originalName: editingItemName, name, description, price, image, badge }
-: { type: "menu_add", token: getIdToken(), name, description, price, image, badge };
+        function logout(message = "") {
+            sessionStorage.removeItem(TOKEN_STORAGE_KEY);
 
-// === التعديل: شيلنا mode:"no-cors" وبقينا نقرأ الرد فعليًا ===
-const saveRes = await fetch(SHEET_URL, {
-method: "POST",
-headers: { "Content-Type": "text/plain" },
-body: JSON.stringify(payload),
-});
-const saveData = await saveRes.json();
-if (saveData.result !== "success") {
-handleAuthError(saveData);
-alert("❌ Save failed: " + (saveData.message || "Unknown error from server."));
-console.error("Save failed:", saveData);
-return;
-}
+            if (window.google && google.accounts && google.accounts.id) {
+                google.accounts.id.disableAutoSelect();
+            }
 
-closeMenuModal();
-setTimeout(loadMenuItems, 800);
-} catch (err) {
-console.error("Failed to save item:", err);
-alert("❌ Something went wrong saving this item: " + err.message);
-} finally {
-saveBtn.disabled = false;
-saveBtn.textContent = "Save";
-}
-}
+            showLogin();
+            setLoginStatus(message, message ? "error" : "");
+        }
 
-// === التعديل: شيلنا mode:"no-cors"، قرأنا الرد، وبنعمل trim على الاسم قبل ما نبعته ===
-function deleteMenuItem(name) {
-if (!confirm(`Delete "${name}" from the menu? This can't be undone.`)) return;
+        function dateKey(value) {
+            const stringValue = String(value || "");
+            const directMatch = /^(\d{4})-(\d{2})-(\d{2})/.exec(stringValue);
 
-const cleanName = String(name ?? "").trim();
+            if (directMatch) {
+                return `${directMatch[1]}-${directMatch[2]}-${directMatch[3]}`;
+            }
 
-fetch(SHEET_URL, {
-method: "POST",
-headers: { "Content-Type": "text/plain" },
-body: JSON.stringify({ type: "menu_delete", token: getIdToken(), name: cleanName }),
-})
-.then((res) => res.json())
-.then((data) => {
-if (data.result !== "success") {
-handleAuthError(data);
-alert("❌ Delete failed: " + (data.message || "Unknown error from server."));
-console.error("Delete failed:", data);
-return;
-}
-setTimeout(loadMenuItems, 800);
-})
-.catch((err) => {
-console.error("Failed to delete item:", err);
-alert("❌ Delete request failed (network or CORS issue). Check console for details.");
-});
-}
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return "";
 
-</script>
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+        }
+
+        function todayKey() {
+            const date = new Date();
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+        }
+
+        function fmtDate(value) {
+            const key = dateKey(value);
+            if (!key) return String(value || "-");
+
+            const parts = key.split("-");
+            const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+            return date.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+            });
+        }
+
+        function fmtTime(value) {
+            if (!value) return "-";
+
+            const simple = /^(\d{1,2}):(\d{2})/.exec(String(value));
+            let hours;
+            let minutes;
+
+            if (simple) {
+                hours = Number(simple[1]);
+                minutes = simple[2];
+            } else {
+                const date = new Date(value);
+                if (Number.isNaN(date.getTime())) return String(value);
+                hours = date.getHours();
+                minutes = String(date.getMinutes()).padStart(2, "0");
+            }
+
+            const period = hours >= 12 ? "PM" : "AM";
+            const displayHours = hours % 12 || 12;
+            return `${displayHours}:${minutes} ${period}`;
+        }
+
+        function isToday(value) {
+            return dateKey(value) === todayKey();
+        }
+
+        function isUpcoming(value) {
+            const key = dateKey(value);
+            return Boolean(key) && key >= todayKey();
+        }
+
+        function createCell(text, className = "") {
+            const cell = document.createElement("td");
+            cell.textContent = text;
+            if (className) cell.className = className;
+            return cell;
+        }
+
+        async function loadReservations() {
+            const tbody = document.getElementById("resTableBody");
+            tbody.replaceChildren();
+
+            const loadingRow = document.createElement("tr");
+            const loadingCell = createCell("Loading...", "muted");
+            loadingCell.colSpan = 5;
+            loadingCell.style.textAlign = "center";
+            loadingCell.style.padding = "30px";
+            loadingRow.appendChild(loadingCell);
+            tbody.appendChild(loadingRow);
+
+            try {
+                const data = await adminPost("admin_reservations");
+                const reservations = Array.isArray(data) ? data : data.items;
+
+                allReservations = Array.isArray(reservations)
+                    ? reservations.slice().reverse()
+                    : [];
+
+                updateStats();
+                renderReservations();
+            } catch (error) {
+                console.error("Failed to load reservations:", error);
+                tbody.replaceChildren();
+                const row = document.createElement("tr");
+                const cell = createCell(error.message || "Failed to load reservations.", "muted");
+                cell.colSpan = 5;
+                cell.style.textAlign = "center";
+                cell.style.padding = "30px";
+                row.appendChild(cell);
+                tbody.appendChild(row);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById("statTotal").textContent = String(allReservations.length);
+            document.getElementById("statToday").textContent = String(
+                allReservations.filter((item) => isToday(item["Reservation Date"])).length
+            );
+            document.getElementById("statUpcoming").textContent = String(
+                allReservations.filter((item) => isUpcoming(item["Reservation Date"])).length
+            );
+        }
+
+        function renderReservations() {
+            const query = document.getElementById("searchInput").value.trim().toLowerCase();
+            const tbody = document.getElementById("resTableBody");
+            const emptyState = document.getElementById("emptyState");
+
+            const filtered = allReservations.filter((reservation) => {
+                const content = [reservation.Name, reservation.Email, reservation.Phone]
+                    .map((value) => String(value || ""))
+                    .join(" ")
+                    .toLowerCase();
+                return content.includes(query);
+            });
+
+            tbody.replaceChildren();
+            emptyState.style.display = filtered.length ? "none" : "block";
+
+            filtered.forEach((reservation) => {
+                const row = document.createElement("tr");
+                if (isToday(reservation["Reservation Date"])) {
+                    row.classList.add("row-today");
+                }
+
+                row.appendChild(createCell(String(reservation.Name || "-"), "name-cell"));
+
+                const contactCell = document.createElement("td");
+                const email = document.createElement("div");
+                email.textContent = String(reservation.Email || "-");
+                const phone = document.createElement("div");
+                phone.className = "muted";
+                phone.textContent = String(reservation.Phone || "-");
+                contactCell.append(email, phone);
+                row.appendChild(contactCell);
+
+                row.appendChild(createCell(fmtDate(reservation["Reservation Date"])));
+                row.appendChild(createCell(fmtTime(reservation["Reservation Time"])));
+                row.appendChild(createCell(fmtDate(reservation["Date Submitted"]), "muted"));
+                tbody.appendChild(row);
+            });
+        }
+
+        function resolveImageSrc(image) {
+            const value = String(image || "").trim();
+
+            if (!value) return PLACEHOLDER_IMAGE;
+            if (/^https:\/\//i.test(value)) return value;
+            if (/^[a-zA-Z0-9._-]+$/.test(value)) {
+                return `images/${encodeURIComponent(value)}`;
+            }
+
+            return PLACEHOLDER_IMAGE;
+        }
+
+        async function loadMenuItems() {
+            const tbody = document.getElementById("menuTableBody");
+            tbody.replaceChildren();
+
+            const row = document.createElement("tr");
+            const cell = createCell("Loading...", "muted");
+            cell.colSpan = 5;
+            cell.style.textAlign = "center";
+            cell.style.padding = "30px";
+            row.appendChild(cell);
+            tbody.appendChild(row);
+
+            try {
+                const data = await fetchJson(`${SHEET_URL}?t=${Date.now()}`, {
+                    cache: "no-store",
+                });
+
+                allMenuItems = Array.isArray(data) ? data : [];
+                renderMenuTable();
+            } catch (error) {
+                console.error("Failed to load menu:", error);
+                tbody.replaceChildren();
+                const errorRow = document.createElement("tr");
+                const errorCell = createCell(error.message || "Failed to load menu.", "muted");
+                errorCell.colSpan = 5;
+                errorCell.style.textAlign = "center";
+                errorCell.style.padding = "30px";
+                errorRow.appendChild(errorCell);
+                tbody.appendChild(errorRow);
+            }
+        }
+
+        function renderMenuTable() {
+            const query = document.getElementById("menuSearchInput").value.trim().toLowerCase();
+            const tbody = document.getElementById("menuTableBody");
+            const emptyState = document.getElementById("menuEmptyState");
+
+            const filtered = allMenuItems.filter((item) =>
+                String(item.name || "").toLowerCase().includes(query)
+            );
+
+            tbody.replaceChildren();
+            emptyState.style.display = filtered.length ? "none" : "block";
+
+            filtered.forEach((item) => {
+                const realIndex = allMenuItems.indexOf(item);
+                const row = document.createElement("tr");
+
+                const dishCell = document.createElement("td");
+                const itemCell = document.createElement("div");
+                itemCell.className = "item-cell";
+                const image = document.createElement("img");
+                image.className = "item-img";
+                image.src = resolveImageSrc(item.image);
+                image.alt = String(item.name || "Dish");
+                image.addEventListener(
+                    "error",
+                    () => {
+                        image.src = PLACEHOLDER_IMAGE;
+                    },
+                    { once: true }
+                );
+                const name = document.createElement("span");
+                name.className = "name-cell";
+                name.textContent = String(item.name || "-");
+                itemCell.append(image, name);
+                dishCell.appendChild(itemCell);
+                row.appendChild(dishCell);
+
+                row.appendChild(createCell(String(item.description || "-"), "muted"));
+                row.appendChild(createCell(`$${String(item.price ?? "-")}`));
+
+                const badgeCell = document.createElement("td");
+                if (item.badge) {
+                    const badge = document.createElement("span");
+                    badge.className = `badge-pill${String(item.badge).toLowerCase() === "new" ? " new" : ""}`;
+                    badge.textContent = String(item.badge);
+                    badgeCell.appendChild(badge);
+                } else {
+                    badgeCell.textContent = "-";
+                    badgeCell.className = "muted";
+                }
+                row.appendChild(badgeCell);
+
+                const actionCell = document.createElement("td");
+                const actions = document.createElement("div");
+                actions.className = "action-btns";
+
+                const editButton = document.createElement("button");
+                editButton.type = "button";
+                editButton.className = "icon-btn";
+                editButton.title = "Edit";
+                editButton.innerHTML = '<i class="fa-solid fa-pen" aria-hidden="true"></i>';
+                editButton.addEventListener("click", () => openMenuModal(allMenuItems[realIndex]));
+
+                const deleteButton = document.createElement("button");
+                deleteButton.type = "button";
+                deleteButton.className = "icon-btn danger";
+                deleteButton.title = "Delete";
+                deleteButton.innerHTML = '<i class="fa-solid fa-trash" aria-hidden="true"></i>';
+                deleteButton.addEventListener("click", () => deleteMenuItem(allMenuItems[realIndex]));
+
+                actions.append(editButton, deleteButton);
+                actionCell.appendChild(actions);
+                row.appendChild(actionCell);
+                tbody.appendChild(row);
+            });
+        }
+
+        function switchTab(tab) {
+            const isReservations = tab === "reservations";
+            tabReservationsBtn.classList.toggle("active", isReservations);
+            tabMenuBtn.classList.toggle("active", !isReservations);
+            reservationsView.classList.toggle("active", isReservations);
+            menuView.classList.toggle("active", !isReservations);
+
+            if (!isReservations && allMenuItems.length === 0) {
+                loadMenuItems();
+            }
+        }
+
+        function setModalMessage(message) {
+            document.getElementById("menuModalMessage").textContent = message;
+        }
+
+        function openMenuModal(item = null) {
+            editingItemName = item ? String(item.name || "") : null;
+            document.getElementById("menuModalTitle").textContent = item ? "Edit Dish" : "Add Dish";
+            document.getElementById("menuName").value = item ? String(item.name || "") : "";
+            document.getElementById("menuDescription").value = item ? String(item.description || "") : "";
+            document.getElementById("menuPrice").value = item ? String(item.price ?? "") : "";
+            document.getElementById("menuImage").value = item ? String(item.image || "") : "";
+            document.getElementById("menuBadge").value = item ? String(item.badge || "") : "";
+            document.getElementById("menuImageFile").value = "";
+            setModalMessage("");
+
+            const previewWrap = document.getElementById("menuImagePreviewWrap");
+            const preview = document.getElementById("menuImagePreview");
+
+            if (item && item.image) {
+                preview.src = resolveImageSrc(item.image);
+                previewWrap.style.display = "block";
+            } else {
+                preview.removeAttribute("src");
+                previewWrap.style.display = "none";
+            }
+
+            menuModal.classList.add("active");
+            document.getElementById("menuName").focus();
+        }
+
+        function closeMenuModal() {
+            menuModal.classList.remove("active");
+            setModalMessage("");
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const result = String(reader.result || "");
+                    resolve(result.includes(",") ? result.split(",")[1] : result);
+                };
+                reader.onerror = () => reject(new Error("Could not read the selected image."));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function uploadSelectedImage() {
+            const input = document.getElementById("menuImageFile");
+            const file = input.files[0];
+
+            if (!file) return null;
+
+            if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+                throw new Error("Only JPG, PNG, WEBP and GIF images are allowed.");
+            }
+
+            if (file.size > MAX_IMAGE_BYTES) {
+                throw new Error("Image must be 5 MB or smaller.");
+            }
+
+            const imageData = await fileToBase64(file);
+            const result = await adminPost("menu_upload_image", {
+                imageData,
+                mimeType: file.type,
+                filename: file.name,
+            });
+
+            return result.url;
+        }
+
+        async function saveMenuItem() {
+            const name = document.getElementById("menuName").value.trim();
+            const description = document.getElementById("menuDescription").value.trim();
+            const price = document.getElementById("menuPrice").value.trim();
+            const badge = document.getElementById("menuBadge").value;
+            const saveButton = document.getElementById("menuSaveBtn");
+
+            setModalMessage("");
+
+            if (name.length < 2 || name.length > 100) {
+                setModalMessage("Enter a valid dish name.");
+                return;
+            }
+
+            if (!/^\d+(\.\d{1,2})?$/.test(price)) {
+                setModalMessage("Enter a valid price with up to two decimal places.");
+                return;
+            }
+
+            const originalText = saveButton.textContent;
+            saveButton.disabled = true;
+            saveButton.textContent = "Saving...";
+
+            try {
+                const uploadedUrl = await uploadSelectedImage();
+                const image = uploadedUrl || document.getElementById("menuImage").value.trim();
+                const type = editingItemName ? "menu_update" : "menu_add";
+
+                await adminPost(type, {
+                    originalName: editingItemName || "",
+                    name,
+                    description,
+                    price,
+                    image,
+                    badge,
+                });
+
+                closeMenuModal();
+                await loadMenuItems();
+            } catch (error) {
+                console.error("Failed to save menu item:", error);
+                setModalMessage(error.message || "Could not save the menu item.");
+            } finally {
+                saveButton.disabled = false;
+                saveButton.textContent = originalText;
+            }
+        }
+
+        async function deleteMenuItem(item) {
+            if (!item || !item.name) return;
+
+            const confirmed = window.confirm(`Delete “${item.name}”?`);
+            if (!confirmed) return;
+
+            try {
+                await adminPost("menu_delete", { name: String(item.name) });
+                await loadMenuItems();
+            } catch (error) {
+                console.error("Failed to delete menu item:", error);
+                window.alert(error.message || "Could not delete the item.");
+            }
+        }
+
+        document.getElementById("logoutBtn").addEventListener("click", () => logout());
+        document.getElementById("refreshReservationsBtn").addEventListener("click", loadReservations);
+        document.getElementById("searchInput").addEventListener("input", renderReservations);
+        document.getElementById("menuSearchInput").addEventListener("input", renderMenuTable);
+        document.getElementById("tabReservationsBtn").addEventListener("click", () => switchTab("reservations"));
+        document.getElementById("tabMenuBtn").addEventListener("click", () => switchTab("menu"));
+        document.getElementById("addMenuBtn").addEventListener("click", () => openMenuModal());
+        document.getElementById("closeModalBtn").addEventListener("click", closeMenuModal);
+        document.getElementById("cancelModalBtn").addEventListener("click", closeMenuModal);
+        document.getElementById("menuSaveBtn").addEventListener("click", saveMenuItem);
+
+        document.getElementById("menuImageFile").addEventListener("change", function() {
+            const file = this.files[0];
+            const previewWrap = document.getElementById("menuImagePreviewWrap");
+            const preview = document.getElementById("menuImagePreview");
+
+            setModalMessage("");
+
+            if (!file) {
+                previewWrap.style.display = "none";
+                return;
+            }
+
+            if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+                this.value = "";
+                previewWrap.style.display = "none";
+                setModalMessage("Only JPG, PNG, WEBP and GIF images are allowed.");
+                return;
+            }
+
+            if (file.size > MAX_IMAGE_BYTES) {
+                this.value = "";
+                previewWrap.style.display = "none";
+                setModalMessage("Image must be 5 MB or smaller.");
+                return;
+            }
+
+            preview.src = URL.createObjectURL(file);
+            previewWrap.style.display = "block";
+        });
+
+        menuModal.addEventListener("click", (event) => {
+            if (event.target === menuModal) {
+                closeMenuModal();
+            }
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && menuModal.classList.contains("active")) {
+                closeMenuModal();
+            }
+        });
+
+        window.addEventListener("load", () => {
+            initializeGoogleSignIn();
+            const savedToken = sessionStorage.getItem(TOKEN_STORAGE_KEY);
+
+            if (savedToken) {
+                verifyAndOpenDashboard(savedToken);
+            } else {
+                showLogin();
+            }
+        });
+    </script>
 </body>
 </html>
